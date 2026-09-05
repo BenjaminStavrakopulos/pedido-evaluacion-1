@@ -1,165 +1,187 @@
-# Pedido Evaluación 1 — Microservicio Backend Monsite (Pagos y Notificaciones)
+Evaluación 1 – Microservicio Backend Monsite
 
-Repositorio creado para la **Evaluación Parcial 1** de la asignatura DevOps. Contiene el
-microservicio backend (Node.js/Express) y el frontend estático del proyecto **Monsite**,
-reutilizados como base para diseñar y ejecutar un flujo de trabajo Git/GitHub/GitHub Actions.
+1. Introducción
 
-El microservicio principal evaluado es el backend ubicado en [`backend/`](backend/), que expone
-una API REST para:
-- Procesamiento de pagos (Mercado Pago y Transbank).
-- Webhooks de confirmación de pago.
-- Envío de notificaciones por email y WhatsApp.
-- Autenticación y seguridad de rutas administrativas.
+Para esta evaluación se utilizó como base el proyecto Monsite, específicamente su backend desarrollado con Node.js y Express, junto con parte del frontend estático.
 
-## Estrategia de ramificación: GitFlow
+El objetivo principal fue aplicar conceptos vistos en la asignatura de DevOps, principalmente relacionados con el uso de Git y GitHub, manejo de ramas, Pull Requests, revisión de código y automatización mediante GitHub Actions.
 
-Se optó por **GitFlow completo** (en lugar de trunk-based development) por las siguientes razones:
+El backend de Monsite se encarga principalmente de funciones relacionadas con pagos y notificaciones, incluyendo integración con Mercado Pago y Transbank, recepción de webhooks, envío de correos y mensajes de WhatsApp, además de la protección de algunas rutas administrativas.
 
-- El proyecto integra pagos reales (Mercado Pago/Transbank), por lo que se requiere un control
-  estricto de qué cambios llegan a producción (`main`) versus los que están en integración
-  (`develop`). Un error en el flujo de pagos es costoso y difícil de revertir en producción.
-- El equipo trabaja en parejas con features que pueden tardar más de un día en completarse
-  (por ejemplo, integrar un nuevo medio de pago), lo que se adapta mejor a ramas `feature/*`
-  de vida media que a commits directos sobre una única rama compartida.
-- Se necesita una rama estable (`main`) que refleje siempre el último release funcionando,
-  y una rama `develop` donde se integra y prueba el trabajo en curso antes de liberar.
-- GitFlow define explícitamente ramas `hotfix/*` para corregir errores críticos en producción
-  sin tener que esperar el próximo ciclo de `develop`, algo relevante en un sistema que procesa
-  pagos en tiempo real.
+2. Estrategia de ramificación
 
-### Ramas del repositorio
+Para el proyecto se decidió utilizar GitFlow, ya que permite separar de forma clara el código estable del código que todavía se encuentra en desarrollo.
 
-| Rama | Propósito |
-|---|---|
-| `main` | Código en producción. Solo recibe merges desde `develop` (release) o `hotfix/*`. Siempre debe estar desplegable. |
-| `develop` | Rama de integración. Recibe merges desde `feature/*` una vez revisados. Base para el próximo release. |
-| `release/<version>` | (Opcional) Rama de estabilización antes de pasar `develop` a `main`. |
-| `feature/<nombre>` | Nueva funcionalidad. Se crea desde `develop` y se integra de vuelta a `develop` mediante Pull Request. |
-| `hotfix/<nombre>` | Corrección urgente sobre producción. Se crea desde `main` y se integra a `main` **y** a `develop` mediante Pull Request. |
+La rama main representa la versión estable del proyecto, mientras que develop se utiliza para integrar los cambios realizados durante el desarrollo.
 
-## Convención de nombres de ramas
+Para trabajar nuevas funcionalidades se utilizan ramas feature/. Por ejemplo:
 
-- `feature/<descripcion-corta-en-kebab-case>` — ej: `feature/notificaciones-whatsapp`
-- `hotfix/<descripcion-corta-en-kebab-case>` — ej: `hotfix/validacion-webhook-pago`
-- `release/<version-semver>` — ej: `release/1.1.0`
+feature/notificaciones-whatsapp
 
-## Convención de commits
+En caso de existir un problema urgente en producción, se pueden utilizar ramas hotfix/, creadas directamente desde main.
 
-Se utiliza el formato de **Conventional Commits**:
+También se considera el uso opcional de ramas release/ cuando sea necesario preparar una versión antes de integrarla definitivamente a producción.
 
-```
-<tipo>(<alcance-opcional>): <descripción corta en modo imperativo>
-```
+Esta estrategia resulta adecuada para el proyecto debido a que el backend incluye funciones importantes como el procesamiento de pagos. Mantener una separación entre desarrollo y producción disminuye el riesgo de incorporar cambios que todavía no han sido revisados o probados.
 
-Tipos permitidos:
-- `feat`: nueva funcionalidad.
-- `fix`: corrección de errores.
-- `docs`: cambios de documentación.
-- `refactor`: cambios de código que no agregan funcionalidad ni corrigen bugs.
-- `test`: agregar o corregir pruebas.
-- `chore`: tareas de mantenimiento (dependencias, configuración, CI).
+3. Convención de ramas y commits
 
-Ejemplos:
-```
-feat(payment): agregar validación de monto mínimo en checkout
-fix(webhook): corregir verificación de firma de Mercado Pago
-docs(readme): documentar convenciones de ramas y commits
-```
+Para mantener un repositorio más ordenado se definieron nombres simples para las ramas.
 
-## Flujo de trabajo (Pull Requests)
+Las funcionalidades utilizan:
 
-1. Clonar el repositorio y entrar al proyecto:
+feature/nombre-del-cambio
 
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd pedido-evaluacion-1
+Las correcciones urgentes:
+
+hotfix/nombre-del-cambio
+
+Y las versiones:
+
+release/version
+
+Además, para los commits se utiliza Conventional Commits, permitiendo identificar rápidamente qué tipo de modificación se realizó.
+
+Algunos ejemplos son:
+
+feat(payment): agregar validación de monto mínimo
+
+fix(webhook): corregir validación de pago
+
+docs(readme): actualizar documentación del proyecto
+
+Los tipos utilizados principalmente son feat, fix, docs, refactor, test y chore.
+
+Esto ayuda a mantener un historial más claro y facilita entender los cambios realizados sin tener que revisar directamente el código.
+
+4. Flujo de trabajo con Git y GitHub
+
+El trabajo comienza desde la rama develop.
+
+Primero se actualiza la rama local:
+
 git switch develop
-```
 
-2. Actualizar la rama antes de comenzar y crear una rama de trabajo:
-
-```bash
 git pull origin develop
+
+Luego se crea una rama nueva para realizar el cambio:
+
 git switch -c feature/nombre-del-cambio
-```
 
-3. Realizar cambios, revisar el estado y crear un commit trazable:
+Después de desarrollar la funcionalidad se revisan los archivos modificados y se genera el commit:
 
-```bash
 git status
-git add <archivos-modificados>
-git commit -m "feat(scope): describir el cambio"
-```
 
-4. Publicar la rama y abrir un Pull Request hacia `develop`:
+git add .
 
-```bash
+git commit -m "feat(scope): descripción del cambio"
+
+Finalmente, la rama se publica en GitHub:
+
 git push -u origin feature/nombre-del-cambio
-```
 
-5. El Pull Request debe describir el cambio, cómo probarlo y referenciar el issue/tarea si aplica.
-  GitHub Actions ejecuta automáticamente la verificación de CI (ver
-  [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) en cada push a `main` o `develop` y
-  en Pull Requests hacia `main` o `develop`.
-6. La revisión requiere al menos la aprobación de un/a integrante distinto/a del autor antes de
-   hacer merge (revisión por pares).
-7. Después de resolver observaciones y confirmar que CI está en verde, se integra el Pull Request.
-  Se utiliza **squash merge** para features (mantener historial limpio en `develop`/`main`) y
-   **merge commit** para hotfixes hacia `main` y `develop` (trazabilidad explícita del hotfix).
-8. Una vez fusionada, actualizar las ramas locales y eliminar la rama de trabajo:
+Una vez publicada, se crea un Pull Request hacia develop.
 
-```bash
-git switch develop
-git pull origin develop
-git branch -d feature/nombre-del-cambio
-git push origin --delete feature/nombre-del-cambio
-```
+Antes de realizar el merge, otro integrante del equipo debe revisar el código. Además, las validaciones configuradas mediante GitHub Actions deben terminar correctamente.
 
-9. Cuando `develop` se promueve mediante Pull Request a `main`, el job `deploy` se ejecuta
-  automáticamente después de CI y publica el frontend en Firebase Hosting.
+Para las ramas de funcionalidades se utiliza preferentemente Squash Merge, evitando llenar el historial de develop con muchos commits pequeños.
 
-## Flujo CI/CD automatizado
+5. Revisión de código
 
-El workflow implementa un flujo DevOps básico y reproducible:
+La revisión mediante Pull Requests permite que un integrante diferente al autor pueda comprobar el cambio antes de integrarlo.
 
-1. **Integración continua (CI):** instala Node.js 20 y las dependencias con `npm ci`, comprueba la
-  sintaxis del backend, valida referencias HTML/JS y busca secretos críticos trackeados.
-2. **Entrega continua (CD):** cuando un cambio llega a `main` y CI termina correctamente,
-  `FirebaseExtended/action-hosting-deploy` publica el frontend configurado en `firebase.json`.
-3. **Protección de credenciales:** la cuenta de servicio no se guarda en el repositorio. Debe
-  registrarse en GitHub como secreto del repositorio con el nombre `FIREBASE_SERVICE_ACCOUNT`.
+Durante la revisión se consideran principalmente los siguientes aspectos:
 
-Para configurar el despliegue en GitHub:
+* Que el código sea entendible y mantenga la estructura del proyecto.
+* Que no existan credenciales o secretos escritos directamente en el código.
+* Que se consideren posibles errores o casos límite.
+* Que las validaciones automáticas de GitHub Actions hayan finalizado correctamente.
 
-1. Ir a `Settings > Secrets and variables > Actions`.
-2. Crear el secreto `FIREBASE_SERVICE_ACCOUNT` con el JSON de una cuenta de servicio autorizada
-  para Firebase Hosting.
-3. Confirmar que el workflow se ejecute desde `main` y revisar el resultado en la pestaña
-  `Actions`.
+Si existen observaciones, estas deben ser corregidas o justificadas antes de realizar el merge.
 
-## Estrategia de revisión de código
+Este proceso permite disminuir errores y mantener mayor control sobre los cambios que llegan a las ramas principales.
 
-- Ningún cambio se fusiona sin al menos una revisión aprobada.
-- El revisor valida: legibilidad, cobertura de casos límite, ausencia de credenciales/secretos
-  en el código y que la verificación de CI haya pasado.
-- Los comentarios de revisión deben resolverse (o justificarse) antes del merge.
+6. Integración y despliegue continuo
 
-## Estructura del proyecto
+El repositorio cuenta con un workflow de GitHub Actions ubicado en:
 
-```
-backend/        Microservicio Node.js/Express (pagos, notificaciones, webhooks)
-admin/          Panel administrativo (HTML/JS)
-js/, css/       Frontend estático (catálogo, checkout, cuenta de usuario)
-scripts/        Scripts de validación y escaneo de seguridad del proyecto
-load-tests/     Pruebas de carga (Locust)
-.github/workflows/ci.yml  Pipeline de integración continua (CI)
-```
+.github/workflows/ci.yml
 
-## Ejecución local del backend
+Este workflow se ejecuta cuando existen cambios o Pull Requests relacionados con las ramas main y develop.
 
-```bash
+En la etapa de Integración Continua, CI, se utiliza Node.js 20 y se realizan distintas verificaciones sobre el proyecto.
+
+Entre ellas se encuentran:
+
+* Instalación de dependencias mediante npm ci.
+* Comprobación de sintaxis del backend.
+* Validación de referencias utilizadas en HTML y JavaScript.
+* Revisión para evitar que secretos importantes sean almacenados accidentalmente en el repositorio.
+
+Cuando los cambios llegan correctamente a main, se ejecuta además la etapa de despliegue.
+
+El frontend se publica automáticamente utilizando Firebase Hosting.
+
+De esta manera, un cambio solamente puede llegar al despliegue si las verificaciones anteriores finalizan correctamente.
+
+7. Manejo de credenciales
+
+Debido a que el proyecto trabaja con servicios externos como Firebase y plataformas de pago, existen credenciales que no deben almacenarse directamente en GitHub.
+
+Los archivos locales como .env se encuentran excluidos del repositorio y se utiliza un archivo .env.example solamente como referencia de las variables necesarias.
+
+Para realizar el despliegue automático en Firebase se utiliza un GitHub Secret llamado:
+
+FIREBASE_SERVICE_ACCOUNT
+
+Este secreto contiene las credenciales necesarias para permitir que GitHub Actions realice el despliegue, sin necesidad de almacenar esas credenciales directamente dentro del código.
+
+8. Estructura utilizada
+
+El proyecto mantiene separadas las principales responsabilidades mediante distintas carpetas.
+
+backend/        Backend Node.js/Express
+
+admin/          Panel administrativo
+
+js/             JavaScript del frontend
+
+css/            Estilos del frontend
+
+scripts/        Scripts de validación
+
+load-tests/     Pruebas de carga
+
+.github/        Configuración de GitHub Actions
+
+La carpeta principal para esta evaluación es backend/, ya que contiene las funciones relacionadas con pagos, notificaciones y webhooks.
+
+9. Ejecución local
+
+Para ejecutar el backend de forma local primero se debe ingresar a su carpeta:
+
 cd backend
-cp .env.example .env   # completar variables reales, nunca subir .env
+
+Luego se crea el archivo de variables de entorno utilizando como referencia .env.example:
+
+cp .env.example .env
+
+Después se instalan las dependencias:
+
 npm install
+
+Y finalmente se inicia el servidor:
+
 npm start
-```
+
+Las credenciales reales utilizadas dentro de .env no deben ser subidas al repositorio.
+
+10. Conclusión
+
+La implementación realizada permite aplicar un flujo de trabajo DevOps sobre un proyecto real.
+
+El uso de GitFlow permite mantener una separación entre el código en desarrollo y el código estable. Los Pull Requests agregan una etapa de revisión antes de integrar modificaciones, mientras que GitHub Actions permite automatizar las validaciones del proyecto.
+
+Además, el uso de secretos de GitHub permite trabajar con servicios externos sin exponer credenciales dentro del repositorio.
+
+En conjunto, estas prácticas permiten tener un proceso de desarrollo más ordenado, trazable y seguro, especialmente considerando que Monsite trabaja con funciones importantes como pagos y notificaciones.

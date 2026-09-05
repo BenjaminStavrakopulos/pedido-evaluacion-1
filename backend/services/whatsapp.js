@@ -7,13 +7,13 @@ const twilioWhatsappTo = process.env.TWILIO_WHATSAPP_TO;
 
 const isValidTwilioSid = typeof twilioAccountSid === 'string' && /^AC[a-zA-Z0-9]{32}$/.test(twilioAccountSid);
 const isValidTwilioToken = typeof twilioAuthToken === 'string' && /^[a-zA-Z0-9]{32}$/.test(twilioAuthToken);
-const hasDestination = typeof twilioWhatsappTo === 'string' && twilioWhatsappTo.trim().length > 0;
+const hasValidDestination = typeof twilioWhatsappTo === 'string' && /^whatsapp:\+\d{8,15}$/.test(twilioWhatsappTo.trim());
 
-if (!isValidTwilioSid || !isValidTwilioToken || !hasDestination) {
+if (!isValidTwilioSid || !isValidTwilioToken || !hasValidDestination) {
     console.warn('⚠️ Twilio no configurado completamente. WhatsApp deshabilitado.');
 }
 
-const twilioClient = isValidTwilioSid && isValidTwilioToken && hasDestination
+const twilioClient = isValidTwilioSid && isValidTwilioToken && hasValidDestination
     ? twilio(twilioAccountSid, twilioAuthToken)
     : null;
 

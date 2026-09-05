@@ -85,6 +85,8 @@ function getRuntimeReadiness() {
     return {
         checks,
         ready: checks.mercadopagoAccessToken
+            && checks.backendApiKeyConfigured
+            && checks.webhookTokenConfigured
     };
 }
 

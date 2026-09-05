@@ -176,7 +176,23 @@ npm start
 
 Las credenciales reales utilizadas dentro de .env no deben ser subidas al repositorio.
 
-10. Conclusión
+
+10. Uso de Inteligencia Artificial
+
+Durante el desarrollo de la evaluación se utilizaron DeepSeek y Gemini como herramientas de apoyo. Su uso se concentró principalmente en la revisión de errores que fueron apareciendo durante la configuración de GitHub Actions, además de consultas relacionadas con la sintaxis y estructura del workflow.
+
+Debido a que Monsite es un proyecto grande y ya cuenta con distintas carpetas, dependencias y servicios, durante las pruebas aparecieron varios errores que tomaban bastante tiempo en revisar. En estos casos se utilizaron estas herramientas como apoyo para entender los mensajes de error y agilizar el proceso de búsqueda y revisión.
+
+Las decisiones sobre qué cambios realizar, la implementación final y la validación del funcionamiento fueron realizadas por el equipo. Las respuestas entregadas por las herramientas de IA fueron revisadas y probadas antes de aplicar cualquier cambio al proyecto.
+
+Herramientas utilizadas:
+
+DeepSeek: apoyo en la revisión de errores y consultas sobre la configuración del workflow de GitHub Actions.
+
+Gemini: apoyo en consultas de sintaxis, estructura y revisión de errores durante las pruebas del workflow.
+
+
+11. Conclusión
 
 La implementación realizada permite aplicar un flujo de trabajo DevOps sobre un proyecto real.
 
@@ -186,7 +202,7 @@ Además, el uso de secretos de GitHub permite trabajar con servicios externos si
 
 En conjunto, estas prácticas permiten tener un proceso de desarrollo más ordenado, trazable y seguro, especialmente considerando que Monsite trabaja con funciones importantes como pagos y notificaciones.
 
-11. Reflexiones personales
+12. Reflexiones personales
 
 Benjamin Stavrakopulos:
 

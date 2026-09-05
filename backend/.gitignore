@@ -1,0 +1,20 @@
+# .gitignore - Backend
+node_modules/
+.env
+.env.local
+*.log
+npm-debug.log*
+package-lock.json
+dist/
+build/
+.DS_Store
+.vscode/
+.idea/
+
+# Archivos sensibles
+*.pem
+*.key
+secrets/
+credentials/
+service-account.json
+service-account*.json

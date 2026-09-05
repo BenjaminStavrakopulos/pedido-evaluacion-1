@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Gestión de Productos</title>
+    <script src="../js/admin/admin-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260813a">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Admin">
+                    <h2>Panel Admin</h2>
+                </div>
+                <button id="adminProductsLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+
+            <!-- Bot&times;n toggle arriba de todo -->
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider">
+                        <span class="theme-knob"></span>
+                    </span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="admin.html" class="nav-item">Dashboard</a>
+                <a href="admin-products.html" class="nav-item active">Productos</a>
+                <a href="admin-discounts.html" class="nav-item">Descuentos</a>
+                <a href="admin-orders.html" class="nav-item">Ordenes</a>
+                <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión de Productos</h1>
+                    <p>Administra todos los productos de tu catálogo</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminProductsViewStoreBtn" class="btn-secondary btn-view-store">Ver Tienda</button>
+                    <button class="btn-primary" id="newProductBtn">+ Nuevo Producto</button>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Total Productos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3 id="featuredProducts">0</h3>
+                        <p>Destacados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3 id="lowStockProducts">0</h3>
+                        <p>Stock Bajo</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏷️</div>
+                    <div class="stat-info">
+                        <h3 id="discountProducts">0</h3>
+                        <p>En Descuento</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Producto -->
+<div class="form-modal" id="productFormModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="productFormTitle">Nuevo Producto</h3>
+            <button class="close-modal" id="productModalCloseBtn">x</button>
+        </div>
+        <form id="productForm" enctype="multipart/form-data">
+            <input type="hidden" id="productId">
+            
+            <!-- INFORMACI&times;N B&times;SICA -->
+            <div class="form-section">
+                <h4>Información Básica</h4>
+                <div class="form-row">
+                    <div class="form-group form-group-full">
+                        <label>Nombre del Producto * (requerido)</label>
+                        <input type="text" id="productName" required placeholder="Ej: Shampoo Reparador Intenso 500ml">
+                    </div>
+                </div>
+                <p class="product-sku-note">
+                    El SKU se genera automáticamente al crear el producto.
+                </p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría del producto *</label>
+                        <select id="productCategory" required>
+                            <option value="">Seleccionar categoría</option>
+                        </select>
+                        <div id="newCategoryBox" class="new-category-box" style="display: none;">
+                            <label for="newCategoryName">Nueva categoría</label>
+                            <input type="text" id="newCategoryName" placeholder="Ej: Ampollas capilares" maxlength="40">
+                            <div class="new-category-actions">
+                                <button type="button" class="btn-secondary" id="addNewCategoryBtn">Agregar categoría</button>
+                                <button type="button" class="btn-secondary" id="cancelNewCategoryBtn">Cancelar</button>
+                            </div>
+                            <hr class="category-divider">
+                            <label for="customCategoryDeleteSelect">Eliminar categoría personalizada</label>
+                            <select id="customCategoryDeleteSelect">
+                                <option value="">Seleccionar categoría personalizada</option>
+                            </select>
+                            <button type="button" class="btn-secondary category-delete-btn" id="deleteCustomCategoryBtn">Eliminar categoría seleccionada</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Marca del producto *</label>
+                        <select id="productBrand" required>
+                            <option value="">Seleccionar Marca</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRECIOS Y DESCUENTOS -->
+            <div class="form-section">
+                <h4>Precios</h4>
+                <div class="form-row form-row-pricing">
+                    <div class="form-group">
+                        <label>Precio Normal * (requerido, en pesos chilenos)</label>
+                        <input type="number" id="productPrice" step="1" min="0" required placeholder="19990 (ej: para $19.990)">
+                    </div>
+                    <div class="form-group">
+                        <label>Tiene descuento</label>
+                        <select id="discountType">
+                            <option value="none">Sin descuento</option>
+                            <option value="percentage">Porcentaje % (ej: 20% de descuento)</option>
+                            <option value="amount">Monto fijo $ (ej: $5.000 de descuento)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" id="discountFields" style="display: none;">
+                    <div class="form-group" id="percentageField">
+                        <label>Porcentaje de Descuento (%)</label>
+                        <input type="number" id="productDiscountPercent" min="1" max="99" placeholder="20 (significa 20% de descuento)">
+                    </div>
+                    <div class="form-group" id="amountField"> 
+                        <label>Monto de Descuento ($)</label>
+                        <input type="number" id="productDiscountAmount" step="1" min="0" placeholder="5000 (significa $5.000 de descuento)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Precio Final</label>
+                        <input type="text" id="finalPrice" readonly placeholder="Se calculará automáticamente">
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVENTARIO -->
+            <div class="form-section">
+                <h4>Inventario</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock Disponible * (requerido, cantidad en unidades)</label>
+                        <input type="number" id="productStock" required placeholder="50 (ej: tienes 50 unidades disponibles)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Peso/Cantidad del Producto (ej: 500ml, 250gr)</label>
+                        <div class="quantity-container">
+                            <input type="number" id="productQuantity" step="0.01" placeholder="500">
+                            <select id="productUnit">
+                                <option value="ml">ml (mililitros)</option>
+                                <option value="gr">gr (gramos)</option>
+                                <option value="unidad">unidad</option>
+                                <option value="pack">pack</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESCRIPCI&times;N Y DETALLES -->
+            <div class="form-section">
+                <h4>Descripción</h4>
+                <div class="form-group">
+                    <label>Descripción del Producto * (requerido)</label>
+                    <textarea id="productDescription" required rows="4" maxlength="200" placeholder="Describe las características principales: 'Shampoo reparador con keratina para cabello dañado, repara y fortalece la fibra capilar, deja el cabello suave y brillante...'" ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Ingredientes Principales (opcional)</label>
+                    <textarea id="productIngredients" rows="3" placeholder="Ej: Keratina, Aceite de Argán, Proteína de Trigo, Vitamina E..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Modo de Uso (opcional)</label>
+                    <textarea id="productUsage" rows="2" placeholder="Ej: Aplicar sobre cabello mojado, masajear durante 2-3 minutos, enjuagar abundantemente..."></textarea>
+                </div>
+            </div>
+
+            <!-- IMAGEN -->
+            <div class="form-section">
+                <h4>Imagen del producto</h4>
+                <div class="form-group">
+                    <label>Imagen del Producto</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="productImage" accept="image/*" class="image-input">
+                        <div class="image-preview" id="imagePreview">
+                            <span>Haz clic para subir imagen</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="productModalCancelBtn">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar Producto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="form-modal" id="brandManagerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Gestionar marca</h3>
+            <button class="close-modal" id="brandManagerCloseBtn">x</button>
+        </div>
+
+        <div class="form-section">
+            <h4>Agregar marca</h4>
+            <div class="form-group">
+                <label for="newBrandName">Nombre de la marca *</label>
+                <input type="text" id="newBrandName" maxlength="50" placeholder="Ej: L'Oréal Professionnel">
+            </div>
+
+            <div class="form-group">
+                <label for="newBrandLogo">Logo de la marca *</label>
+                <input type="file" id="newBrandLogo" accept="image/*" class="image-input">
+                <div class="image-preview image-preview--brand-logo" id="newBrandLogoPreview" role="button" tabindex="0">
+                    <span>Haz clic para subir el logo</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-primary" id="saveNewBrandBtn">Guardar marca</button>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h4>Eliminar marca personalizada</h4>
+            <div class="form-group">
+                <label for="customBrandDeleteSelect">Marca personalizada</label>
+                <select id="customBrandDeleteSelect">
+                    <option value="">Seleccionar marca personalizada</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="deleteCustomBrandBtn">Eliminar marca</button>
+                <button type="button" class="btn-secondary" id="brandManagerCancelBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Lista de Productos -->
+            <div class="products-table-container">
+                <div class="table-header">
+                    <h3>Todos los Productos</h3>
+                    <div class="table-actions">
+                        <input type="text" id="productSearch" placeholder="Buscar productos...">
+                        <select id="categoryFilter">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="products-table products-management-table">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Producto</th>
+                                <th>SKU</th>
+                                <th>Precio</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Productos cargados din&times;micamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js"></script>
+    <script src="../js/services/firebase-data.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/admin-notifications.js"></script>
+    <script src="../js/admin/admin-products.js"></script>
+    <script src="../js/ui/theme-toggle.js"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+
+</html>
+

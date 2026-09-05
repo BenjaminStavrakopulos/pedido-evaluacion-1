@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Fotos anonimizadas para entrenamiento de IA (consentimiento opcional del usuario).
+    // El nombre de archivo y la ruta no incluyen datos identificatorios; solo puede
+    // escribir un usuario autenticado, y solo el backend/consola puede leerlas.
+    match /hair-analysis-training/{sampleId}/{fileName} {
+      allow write: if request.auth != null
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow read: if false;
+    }
+
+    match /brand-logos/{brandId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

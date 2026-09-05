@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Panel Admin</title>
+    <script src="../js/admin/admin-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260828f">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Admin">
+                    <h2>Panel Admin</h2>
+                </div>
+                <button id="adminLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+
+            <!-- Boton toggle -->
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider">
+                        <span class="theme-knob"></span>
+                    </span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin.html" class="nav-item active">Dashboard</a>
+                <a href="admin-products.html" class="nav-item">Productos</a>
+                <a href="admin-discounts.html" class="nav-item">Descuentos</a>
+                <a href="admin-orders.html" class="nav-item">Ordenes</a>
+                <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Panel de Administración</h1>
+                    <p>Bienvenido al centro de control de Monsite</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminDashboardViewStoreBtn" class="btn-secondary">Ver Tienda</button>
+                </div>
+            </header>
+
+            <!-- Stats Dashboard -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Total Productos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3 id="featuredProducts">0</h3>
+                        <p>Destacados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📂</div>
+                    <div class="stat-info">
+                        <h3 id="totalCategories">0</h3>
+                        <p>Categorpias</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3 id="lowStockProducts">0</h3>
+                        <p>Stock Bajo</p>
+                    </div>
+                </div>
+            </div>
+
+            <section class="weekly-sales-panel" aria-labelledby="weeklySalesTitle">
+                <div class="weekly-sales-header">
+                    <div>
+                        <h2 id="weeklySalesTitle">Ventas semanales</h2>
+                        <p id="weeklySalesRange">Semana actual</p>
+                    </div>
+                    <select id="weeklySalesWeek" aria-label="Seleccionar semana para revisar ventas"></select>
+                </div>
+                <div class="weekly-sales-metrics">
+                    <div><strong id="weeklySalesRevenue">$0</strong><span>Ingresos</span></div>
+                    <div><strong id="weeklySalesOrders">0</strong><span>Órdenes</span></div>
+                    <div><strong id="weeklySalesUnits">0</strong><span>Unidades</span></div>
+                </div>
+                <div class="weekly-sales-chart" id="weeklySalesChart" aria-label="Ventas por día de la semana"></div>
+            </section>
+
+            <section class="audience-analytics-grid" aria-label="Analíticas del sitio">
+                <article class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h2>Visitas al sitio</h2>
+                            <p id="visitsAnalyticsRange">Rango seleccionado</p>
+                        </div>
+                        <div class="analytics-date-filters">
+                            <label>Desde <input type="date" id="visitsAnalyticsStart"></label>
+                            <label>Hasta <input type="date" id="visitsAnalyticsEnd"></label>
+                        </div>
+                    </div>
+                    <strong id="visitsAnalyticsTotal">0</strong>
+                    <div id="visitsAnalyticsChart" class="analytics-chart" aria-label="Visitas por día"></div>
+                </article>
+                <article class="analytics-card">
+                    <div class="analytics-card-header">
+                        <div>
+                            <h2>Usuarios nuevos</h2>
+                            <p id="usersAnalyticsRange">Rango seleccionado</p>
+                        </div>
+                        <div class="analytics-date-filters">
+                            <label>Desde <input type="date" id="usersAnalyticsStart"></label>
+                            <label>Hasta <input type="date" id="usersAnalyticsEnd"></label>
+                        </div>
+                    </div>
+                    <strong id="usersAnalyticsTotal">0</strong>
+                    <div id="usersAnalyticsChart" class="analytics-chart" aria-label="Usuarios nuevos por día"></div>
+                </article>
+            </section>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions-grid">
+                <a href="admin-products.html" class="action-card">
+                    <div class="action-icon">📦</div>
+                    <h3>Gestionar Productos</h3>
+                    <p>Agregar, editar o eliminar productos del catálogo</p>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a href="admin-discounts.html" class="action-card">
+                    <div class="action-icon">🏷️</div>
+                    <h3>Códigos de Descuento</h3>
+                    <p>Crear y administrar códigos promocionales</p>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a href="admin-orders.html" class="action-card">
+                    <div class="action-icon">📦</div>
+                    <h3>Gestión de Ordenes</h3>
+                    <p>Ver y gestionar los pedidos de clientes</p>
+                    <span class="action-arrow">→</span>
+                </a>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <h3>Actividad Reciente</h3>
+                <div class="activity-list" id="recentActivity">
+                    <div class="activity-item">
+                        <div class="activity-icon">OK</div>
+                        <div class="activity-content">
+                            <p>Bienvenido al Panel de Administración</p>
+                            <span class="activity-time">Recién iniciado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module" src="../js/config/firebase-config.js"></script>
+    <script src="../js/services/firebase-data.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/admin-notifications.js"></script>
+    <script src="../js/admin/admin.js?v=20260828e"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+</html>
+

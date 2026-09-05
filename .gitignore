@@ -1,0 +1,49 @@
+# Environment variables (NUNCA subir a Git)
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+backend/.env.*.local
+
+# Firebase keys / configuraciones locales sensibles
+js/config/firebase-config.local.js
+js/config/firebase-config.local.json
+js/config/payment-config.local.js
+js/config/payment-config.local.json
+
+# Dependencias y builds
+node_modules/
+backend/node_modules/
+dist/
+build/
+
+# Reportes de pruebas de carga / cobertura
+load-tests/report.html
+load-tests/coverage-html/
+load-tests/coverage.xml
+.coverage
+.coveragerc-local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Archivos sensibles / credenciales
+*.pem
+*.key
+*.keystore
+secrets/
+credentials/
+service-account.json
+service-account*.json
+backend/service-account.json
+backend/service-account*.json
+audit-omit-dev.*
+backend/audit-omit-dev.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+.firebase/

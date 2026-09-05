@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Gestión de Marcas - Panel Admin</title>
+    <script src="../js/admin/admin-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260813a">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <script src="../js/admin/redirect-to-products.js"></script>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Admin">
+                    <h2>Panel Admin</h2>
+                </div>
+                <button id="adminBrandsLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+            
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider">
+                        <span class="theme-knob"></span>
+                    </span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin.html" class="nav-item">Dashboard</a>
+                <a href="admin-products.html" class="nav-item">Productos</a>
+                <a href="admin-discounts.html" class="nav-item">Descuentos</a>
+                <a href="admin-orders.html" class="nav-item">Ordenes</a>
+                <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión de Marcas</h1>
+                    <p>Administra las marcas de tus productos</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminBrandsViewStoreBtn" class="btn-secondary btn-view-store">Ver Tienda</button>
+                    <button id="adminBrandsNewBtn" class="btn-primary">+ Nueva Marca</button>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🏷️</div>
+                    <div class="stat-info">
+                        <h3 id="totalBrands">0</h3>
+                        <p>Total Marcas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="brandsWithProducts">0</h3>
+                        <p>Marcas con Productos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Marca -->
+            <div class="form-modal" id="brandFormModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="brandFormTitle">Nueva Marca</h3>
+                        <button id="brandFormCloseBtn" class="close-modal">x</button>
+                    </div>
+                    <form id="brandForm">
+                        <input type="hidden" id="brandId">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre de la Marca *</label>
+                                <input type="text" id="brandName" required placeholder="Ej: Olaplex, Kérastase...">
+                            </div>
+                            <div class="form-group">
+                                <label>ID de la Marca *</label>
+                                <input type="text" id="brandIdInput" required placeholder="Ej: olaplex, kerastase">
+                                <small>Usa solo letras minúsculas y sin espacios</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="brandDescription" rows="3" placeholder="Describe esta marca..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Logo de la Marca</label>
+                            <div class="image-upload-container">
+                                <input type="file" id="brandLogo" accept="image/*" class="image-input">
+                                <div class="image-preview" id="logoPreview">
+                                    <span>Haz clic para subir logo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="brandActive" checked>
+                            <label for="brandActive">Marca Activa</label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="brandFormCancelBtn" class="btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn-primary">Guardar Marca</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de Marcas -->
+            <div class="categories-grid-admin">
+                <div id="brandsList">
+                    <!-- Marcas se cargan din&times;micamente -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js"></script>
+    <script src="../js/services/firebase-data.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/admin-notifications.js"></script>
+    <script src="../js/admin/admin-brands.js"></script>
+    <script src="../js/ui/theme-toggle.js"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Mis Compras - Monsite</title>
+    <meta name="description" content="Revisa el estado de tus ordenes, detalles de compra y seguimiento de pedidos en Monsite.">
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:title" content="Mis Compras Monsite">
+    <meta property="og:description" content="Consulta y gestiona tus compras en Monsite.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/logo.jpg">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/my-orders.css?v=20260828b">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810c">
+        <script src="js/services/firebase-data.js?v=20260828a"></script>
+        <script src="js/core/receipt.js?v=20260828a"></script>
+</head>
+<body>
+    <div class="shipping-banner" id="shippingBanner"> <p>🚚 Envío gratis en compras sobre $30.000</p>
+        <button class="shipping-banner-close" id="shippingBannerClose" type="button" aria-label="Cerrar oferta">
+            &times;
+        </button>
+    </div>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="images/logo.jpg" alt="Monsite Logo" class="logo">
+        </div>
+        
+        <nav class="nav">
+            <a href="index.html#hero" class="nav-link">Inicio</a>
+            <div class="nav-catalog">
+                <a href="products.html" class="nav-link nav-catalog-trigger" aria-haspopup="true">Catálogo</a>
+                <div class="catalog-dropdown" role="menu" aria-label="Menu de Catálogo">
+                    <div class="catalog-column">
+                        <h4>Marcas</h4>
+                        <a href="products.html?brand=olaplex" class="catalog-link">Olaplex</a>
+                        <a href="products.html?brand=k18" class="catalog-link">K18</a>
+                        <a href="products.html?brand=living-proof" class="catalog-link">Living Proof</a>
+                        <a href="products.html?brand=moroccanoil" class="catalog-link">Moroccanoil</a>
+                        <a href="products.html?brand=tigi" class="catalog-link">Tigi</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Categorias</h4>
+                        <a href="products.html?category=shampoo" class="catalog-link">Limpieza</a>
+                        <a href="products.html?category=tratamiento" class="catalog-link">Tratamientos Capilares</a>
+                        <a href="products.html?category=aceite" class="catalog-link">Aceites &amp; Serums</a>
+                        <a href="products.html?category=acondicionador" class="catalog-link">Acondicionadores</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Ver todo</h4>
+                        <a href="products.html" class="catalog-link catalog-link-cta">Ver todos los productos</a>
+                    </div>
+                </div>
+            </div>
+            <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="user-actions">
+            <div class="user-menu-container">
+                <button id="loginBtn" class="user-profile-btn" type="button" style="display:none;">
+                    <div class="user-profile-text">
+                        <span class="user-greeting">Hola, <span id="userName">Usuario</span></span>
+                        <span class="user-profile-link">Tu perfil &gt;</span>
+                    </div>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <button class="dropdown-link" data-href="my-orders.html">Mis Compras</button>
+                    <button class="dropdown-link" data-href="opciones-cuenta.html">Configuración</button>
+                    <button class="dropdown-link" id="manageProductsBtn" style="display: none; border-top: 1px solid #eee; color: #ff6b35; font-weight: 500;">Gestionar Productos</button>
+                    <button class="dropdown-link" id="logoutBtn">Cerrar Sesión</button>
+                </div>
+                <button id="showLoginBtn" class="login-btn" style="display:none;">Iniciar Sesión</button>
+                <button id="showRegisterBtn" class="register-btn" style="display:none;">Registrarse</button>
+            </div>
+            <div class="cart-icon" id="cartIcon" role="button" tabindex="0" aria-label="Abrir carrito">
+                <span class="cart-icon-badge" aria-hidden="true"></span>
+                <span class="cart-icon-label">Carrito</span>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav -->
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <img src="images/logo.jpg" alt="Logo" class="mobile-nav-logo">
+            <span class="mobile-nav-title">Menú</span>
+            <button class="mobile-close" id="mobileClose">x</button>
+        </div>
+        <a href="index.html#hero" class="nav-link">Inicio</a>
+        <a href="products.html" class="nav-link">Catálogo</a>
+        <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+    </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Cart Sidebar (AGREGADO) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Tu Carrito de Compras</h3>
+            <button id="closeCart" class="close-cart">x</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito se cargan dinamicamente -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceder al Pago</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="orders-container">
+        <div class="orders-wrapper">
+            <div class="orders-header">
+                <h1>Mis Compras</h1>
+                <p>Historial de compras y estado de tus pedidos</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="orders-filters">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="pending">Pendientes</button>
+                <button class="filter-btn" data-filter="paid">Pagadas</button>
+                <button class="filter-btn" data-filter="shipped">Enviadas</button>
+                <button class="filter-btn" data-filter="delivered">Entregadas</button>
+                <button class="filter-btn" data-filter="refunded">Devueltas</button>
+            </div>
+
+            <!-- Orders List -->
+            <div class="orders-content" id="ordersContent">
+                <!-- Las ordenes se cargan aqui -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-orders" id="emptyOrders" style="display: none;">
+                <div class="empty-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                <h3>No tienes Órdenes</h3>
+                <p>Comienza a comprar productos de Monsite!</p>
+                <a href="products.html" class="btn-primary">Ver Productos</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div class="order-modal" id="orderModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Monsite Belleza & Cuidado Capilar. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Scripts en orden correcto -->
+    <script type="module" src="js/config/firebase-config.js?v=20260809"></script>
+    <script src="js/core/session.js?v=20260809"></script>
+    <script src="js/services/firebase-data.js?v=20260828a"></script>
+    <script src="js/core/receipt.js?v=20260828a"></script>
+    <script src="js/core/app.js?v=20260827j"></script>
+    <script src="js/ui/menu.js?v=20260810e"></script>
+    <script src="js/pages/my-orders.js?v=20260828a"></script>
+</body>
+</html>
+

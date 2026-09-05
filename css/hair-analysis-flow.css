@@ -1,0 +1,719 @@
+/* hair-analysis-flow.css - Flujo guiado de análisis de cabello con IA */
+
+.hair-flow-body {
+    background: linear-gradient(180deg, #f4f2ff 0%, #ffffff 45%);
+    min-height: 100vh;
+}
+
+.hair-flow {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #ffffff;
+    box-shadow: 0 0 40px rgba(91, 80, 197, 0.08);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.hair-panel {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.hair-panel.active {
+    display: flex;
+}
+
+.hair-panel-body {
+    padding: 1.5rem 1.5rem 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Barra superior compartida ---------- */
+.hair-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f0eefc;
+}
+
+.hair-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e6e2fb;
+    background: #ffffff;
+    color: #1a1a1a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hair-topbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #5b50c5;
+}
+
+.hair-topbar-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+}
+
+.hair-topbar-spacer {
+    width: 40px;
+}
+
+/* ---------- Intro ---------- */
+.hair-intro-body {
+    text-align: center;
+    align-items: center;
+}
+
+.hair-eyebrow {
+    color: #5b50c5;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 1rem 0 0.5rem;
+}
+
+.hair-intro-title {
+    font-size: 1.6rem;
+    line-height: 1.3;
+    margin: 0 0 0.75rem;
+}
+
+.hair-intro-title strong { color: #5b50c5; }
+
+.hair-intro-subtitle {
+    color: #6c757d;
+    margin: 0 0 1.5rem;
+}
+
+.hair-intro-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.hair-preview-card {
+    background: #f7f6ff;
+    border: 1px solid #ece8fd;
+    border-radius: 14px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.hair-preview-icon { font-size: 1.6rem; }
+.hair-preview-label { font-size: 0.78rem; font-weight: 600; color: #4b4b4b; }
+
+.hair-tips-card {
+    width: 100%;
+    background: #f7f6ff;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.hair-tips-card h2 {
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+    color: #1a1a1a;
+}
+
+.hair-tips-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #4b4b4b;
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.hair-btn-primary {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 1rem;
+    background: linear-gradient(135deg, #6a5cff 0%, #5b50c5 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.hair-btn-primary:disabled,
+.hair-btn-primary.hair-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hair-btn-secondary {
+    width: 100%;
+    border: 1px solid #e6e2fb;
+    border-radius: 14px;
+    padding: 0.9rem;
+    background: #ffffff;
+    color: #5b50c5;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-top: 1rem;
+}
+
+.hair-btn-link {
+    border: none;
+    background: none;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 0.75rem;
+    cursor: pointer;
+}
+
+.hair-footnote {
+    color: #9a9a9a;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+.hair-beta-note {
+    color: #9a9a9a;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+    line-height: 1.5;
+}
+
+.hair-beta-note a { color: #5b50c5; font-weight: 600; }
+
+/* ---------- Consentimiento ---------- */
+.hair-consent-body { text-align: left; }
+
+.hair-consent-title {
+    font-size: 1.3rem;
+    margin: 0.5rem 0 0.6rem;
+    text-align: center;
+}
+
+.hair-consent-intro {
+    color: #6c757d;
+    margin: 0 0 1.25rem;
+    text-align: center;
+}
+
+.hair-consent-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    background: #f7f6ff;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.hair-consent-option input {
+    margin-top: 0.2rem;
+    width: 18px;
+    height: 18px;
+    accent-color: #5b50c5;
+    flex-shrink: 0;
+}
+
+.hair-consent-subheading {
+    font-weight: 600;
+    margin: 1.25rem 0 0.6rem;
+    color: #1a1a1a;
+}
+
+.hair-consent-option-optional { margin-bottom: 0.4rem; }
+
+.hair-consent-optional-note,
+.hair-consent-guest-note {
+    color: #9a9a9a;
+    font-size: 0.78rem;
+    margin: 0 0 1rem;
+    padding-left: 0.2rem;
+}
+
+.hair-consent-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.hair-consent-links a {
+    color: #5b50c5;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.hair-consent-links a:hover { text-decoration: underline; }
+
+/* ---------- Captura guiada ---------- */
+.hair-progress-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1rem 0 0.5rem;
+}
+
+.hair-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #e6e2fb;
+}
+
+.hair-dot.hair-dot-active { background: #5b50c5; }
+.hair-dot.hair-dot-done { background: #5b50c5; }
+
+.hair-dot-line {
+    width: 32px;
+    height: 2px;
+    background: #e6e2fb;
+}
+
+.hair-camera-stage {
+    position: relative;
+    flex: 1;
+    background: #12111a;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hair-camera-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.hair-guide-frame {
+    position: relative;
+    border: 3px dashed rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    z-index: 2;
+    transition: all 0.25s ease;
+}
+
+.hair-guide-frame[data-shape="general"] {
+    width: 62%;
+    height: 74%;
+    border-radius: 46% 46% 40% 40%;
+}
+
+.hair-guide-frame[data-shape="raiz"] {
+    width: 46%;
+    height: 40%;
+    border-radius: 50%;
+}
+
+.hair-guide-frame[data-shape="puntas"] {
+    width: 74%;
+    height: 34%;
+    border-radius: 18px;
+}
+
+.hair-camera-fallback-msg {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem;
+    color: #ffffff;
+    background: rgba(18, 17, 26, 0.92);
+}
+
+.hair-capture-info {
+    padding: 1.25rem 1.5rem 0.5rem;
+    text-align: center;
+}
+
+.hair-capture-info h2 { margin: 0 0 0.35rem; font-size: 1.1rem; }
+.hair-capture-info p { margin: 0; color: #6c757d; font-size: 0.9rem; }
+
+.hair-camera-help-tip {
+    margin-top: 0.75rem;
+    background: #f7f6ff;
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+    color: #4b4b4b;
+}
+
+.hair-capture-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem 2rem;
+}
+
+.hair-shutter-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid #e6e2fb;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.hair-shutter-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.hair-shutter-dot {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6a5cff 0%, #5b50c5 100%);
+}
+
+.hair-upload-fallback {
+    color: #5b50c5;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* ---------- Confirmación de foto ---------- */
+.hair-confirm-photo-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    max-height: 42vh;
+    overflow: hidden;
+    background: #12111a;
+}
+
+.hair-confirm-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hair-confirm-body {
+    text-align: center;
+    align-items: center;
+}
+
+.hair-confirm-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #e7f8ee;
+    color: #1e9e5a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin: 1.25rem 0 0.75rem;
+}
+
+.hair-confirm-icon.hair-confirm-icon-warning {
+    background: #fdecec;
+    color: #d0483f;
+}
+
+/* ---------- Revisión de fotos ---------- */
+.hair-review-subtitle { color: #6c757d; margin: 0 0 1.25rem; }
+
+.hair-review-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.hair-review-card {
+    background: #f7f6ff;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.hair-review-thumb {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+}
+
+.hair-review-card-footer {
+    padding: 0.5rem 0.3rem 0.7rem;
+}
+
+.hair-review-card-footer span {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.hair-review-check { color: #1e9e5a; font-size: 0.9rem; }
+
+.hair-review-retake {
+    border: none;
+    background: none;
+    color: #5b50c5;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.15rem 0;
+}
+
+.hair-review-note {
+    color: #9a9a9a;
+    font-size: 0.8rem;
+    margin: 0 0 1.25rem;
+}
+
+.hair-privacy-note {
+    color: #9a9a9a;
+    font-size: 0.78rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* ---------- Analizando ---------- */
+.hair-analyzing-body {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+}
+
+.hair-analyzing-sparkle {
+    font-size: 2.4rem;
+    margin-bottom: 0.5rem;
+    animation: hairSparklePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes hairSparklePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.75; }
+}
+
+.hair-progress-bar {
+    width: 100%;
+    max-width: 280px;
+    height: 10px;
+    border-radius: 999px;
+    background: #ece8fd;
+    overflow: hidden;
+    margin: 1rem 0 0.5rem;
+}
+
+.hair-progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(135deg, #6a5cff 0%, #5b50c5 100%);
+    transition: width 0.15s linear;
+}
+
+.hair-progress-percent {
+    font-weight: 700;
+    color: #5b50c5;
+    margin: 0 0 1.5rem;
+}
+
+.hair-analyzing-checklist {
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+    max-width: 280px;
+}
+
+.hair-analyzing-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    color: #9a9a9a;
+    font-size: 0.9rem;
+}
+
+.hair-analyzing-checklist li.hair-stage-active { color: #1a1a1a; font-weight: 600; }
+.hair-analyzing-checklist li.hair-stage-done { color: #1e9e5a; font-weight: 600; }
+
+.hair-check-icon { width: 1.1rem; text-align: center; }
+
+/* ---------- Resultados ---------- */
+.hair-results-need-label {
+    text-align: center;
+    color: #6c757d;
+    margin: 1rem 0 0.15rem;
+}
+
+.hair-results-need {
+    text-align: center;
+    color: #5b50c5;
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 1.25rem;
+}
+
+.hair-results-photo {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #12111a;
+    margin-bottom: 1.5rem;
+}
+
+.hair-results-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hair-section-heading {
+    font-size: 0.95rem;
+    margin: 0 0 0.85rem;
+}
+
+.hair-metric-row { margin-bottom: 0.85rem; }
+
+.hair-metric-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.hair-metric-tag { color: #5b50c5; }
+
+.hair-metric-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: #ece8fd;
+    overflow: hidden;
+}
+
+.hair-metric-bar-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #6a5cff 0%, #5b50c5 100%);
+}
+
+.hair-divider {
+    border: none;
+    border-top: 1px solid #f0eefc;
+    margin: 1.5rem 0;
+}
+
+.hair-recommendations {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.hair-recommendations-empty {
+    grid-column: 1 / -1;
+    color: #9a9a9a;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.hair-product-card {
+    background: #f7f6ff;
+    border-radius: 14px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.hair-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hair-product-image img { width: 100%; height: 100%; object-fit: cover; }
+.hair-product-placeholder { color: #b8b1eb; font-size: 0.75rem; font-weight: 700; }
+
+.hair-product-card h4 {
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.hair-product-price { font-weight: 700; color: #1a1a1a; margin: 0; font-size: 0.85rem; }
+
+.hair-product-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+}
+
+.hair-product-link {
+    color: #5b50c5;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-decoration: none;
+}
+
+.hair-product-add {
+    border: 1px solid #5b50c5;
+    background: #ffffff;
+    color: #5b50c5;
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (min-width: 640px) {
+    .hair-flow {
+        margin: 2rem auto;
+        min-height: calc(100vh - 4rem);
+        border-radius: 24px;
+        overflow: hidden;
+    }
+}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Análisis de características del cabello con IA - Monsite</title>
+    <meta name="robots" content="noindex, follow">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hair-analysis-flow.css">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810f">
+</head>
+<body class="hair-flow-body">
+    <div class="hair-flow" id="hairFlow">
+
+        <!-- PASO 0: INTRODUCCIÓN -->
+        <section class="hair-panel active" data-panel="intro" id="panelIntro">
+            <header class="hair-topbar">
+                <a href="index.html" class="hair-icon-btn" aria-label="Volver al inicio">&larr;</a>
+                <span class="hair-topbar-brand">MS</span>
+                <span class="hair-topbar-spacer" aria-hidden="true"></span>
+            </header>
+
+            <div class="hair-panel-body hair-intro-body">
+                <p class="hair-eyebrow">Análisis de cabello</p>
+                <h1 class="hair-intro-title">Descubre qué necesita<br><strong>tu cabello</strong> <span aria-hidden="true">✨</span></h1>
+                <p class="hair-intro-subtitle">Te guiaremos para tomar 3 fotos de tu cabello.</p>
+
+                <div class="hair-intro-preview">
+                    <div class="hair-preview-card">
+                        <span class="hair-preview-icon" aria-hidden="true">👩</span>
+                        <span class="hair-preview-label">General</span>
+                    </div>
+                    <div class="hair-preview-card">
+                        <span class="hair-preview-icon" aria-hidden="true">🧑‍🦰</span>
+                        <span class="hair-preview-label">Raíz</span>
+                    </div>
+                    <div class="hair-preview-card">
+                        <span class="hair-preview-icon" aria-hidden="true">〰️</span>
+                        <span class="hair-preview-label">Puntas</span>
+                    </div>
+                </div>
+
+                <div class="hair-tips-card">
+                    <h2>Para obtener mejores resultados</h2>
+                    <ul>
+                        <li>Usa buena iluminación</li>
+                        <li>Evita filtros</li>
+                        <li>Mantén el cabello visible</li>
+                    </ul>
+                </div>
+
+                <button type="button" class="hair-btn-primary" id="startAnalysisBtn">
+                    <span aria-hidden="true">📷</span> Comenzar análisis
+                </button>
+                <p class="hair-footnote">Toma menos de 1 minuto</p>
+                <p class="hair-beta-note">Servicio en fase beta: los resultados son orientativos y no reemplazan una evaluación profesional. <a href="terminos-analisis-ia.html" target="_blank" rel="noopener">Ver términos del análisis con IA</a>.</p>
+            </div>
+        </section>
+
+        <!-- CONSENTIMIENTO: obligatorio (análisis) + opcional (entrenamiento) -->
+        <section class="hair-panel" data-panel="consent" id="panelConsent">
+            <header class="hair-topbar">
+                <button type="button" class="hair-icon-btn" id="consentBackBtn" aria-label="Volver">&larr;</button>
+                <span class="hair-topbar-title">Antes de comenzar</span>
+                <span class="hair-topbar-spacer" aria-hidden="true"></span>
+            </header>
+
+            <div class="hair-panel-body hair-consent-body">
+                <h2 class="hair-consent-title">Tu privacidad importa</h2>
+                <p class="hair-consent-intro">Para analizar tu cabello necesitamos procesar las fotos que tomes durante el análisis.</p>
+
+                <label class="hair-consent-option">
+                    <input type="checkbox" id="consentAnalysis">
+                    <span>Autorizo el procesamiento de mis fotografías para realizar el análisis y obtener recomendaciones.</span>
+                </label>
+
+                <p class="hair-consent-subheading">Ayúdanos a mejorar Monsite <span aria-hidden="true">✨</span></p>
+
+                <label class="hair-consent-option hair-consent-option-optional">
+                    <input type="checkbox" id="consentTraining">
+                    <span>También autorizo que mis fotos sean almacenadas y utilizadas para mejorar y entrenar nuestra inteligencia artificial.</span>
+                </label>
+                <p class="hair-consent-optional-note">Esta opción es voluntaria y no afecta tu posibilidad de usar el análisis.</p>
+                <p class="hair-consent-guest-note" id="consentGuestNote" hidden>Inicia sesión para poder contribuir con el entrenamiento de la IA.</p>
+
+                <div class="hair-consent-links">
+                    <a href="politica-privacidad.html" target="_blank" rel="noopener">Ver Política de Privacidad</a>
+                    <a href="terminos-analisis-ia.html" target="_blank" rel="noopener">Términos del análisis con IA</a>
+                </div>
+
+                <button type="button" class="hair-btn-primary" id="continueToCameraBtn" disabled>Continuar a la cámara</button>
+            </div>
+        </section>
+
+        <!-- PASO 1-3: CAPTURA GUIADA (se reutiliza para las 3 fotos) -->
+        <section class="hair-panel" data-panel="capture" id="panelCapture">
+            <header class="hair-topbar hair-topbar-camera">
+                <button type="button" class="hair-icon-btn" id="captureExitBtn" aria-label="Salir del análisis">&times;</button>
+                <span class="hair-topbar-title" id="captureStepLabel">Foto 1 de 3</span>
+                <button type="button" class="hair-icon-btn" id="captureHelpBtn" aria-label="Ver ayuda">?</button>
+            </header>
+
+            <div class="hair-progress-dots" id="captureProgress" aria-hidden="true">
+                <span class="hair-dot" data-dot="0"></span>
+                <span class="hair-dot-line"></span>
+                <span class="hair-dot" data-dot="1"></span>
+                <span class="hair-dot-line"></span>
+                <span class="hair-dot" data-dot="2"></span>
+            </div>
+
+            <div class="hair-camera-stage">
+                <video id="hairCameraVideo" class="hair-camera-video" autoplay playsinline muted></video>
+                <div class="hair-guide-frame" id="hairGuideFrame" data-shape="general" aria-hidden="true"></div>
+                <p class="hair-camera-fallback-msg" id="cameraFallbackMsg" hidden>No se pudo acceder a la cámara. Sube una foto desde tu galería.</p>
+            </div>
+
+            <div class="hair-capture-info">
+                <h2 id="captureTitle">Vista general</h2>
+                <p id="captureInstructions">Coloca tu cabello dentro de la guía y procura tener buena iluminación.</p>
+                <p class="hair-camera-help-tip" id="cameraHelpTip" hidden>Usa buena iluminación, evita filtros y mantén el cabello visible dentro del marco.</p>
+            </div>
+
+            <div class="hair-capture-actions">
+                <button type="button" class="hair-shutter-btn" id="shutterBtn" aria-label="Tomar foto">
+                    <span class="hair-shutter-dot" aria-hidden="true"></span>
+                </button>
+                <label class="hair-upload-fallback">
+                    Subir desde galería
+                    <input type="file" accept="image/*" id="galleryInput" hidden>
+                </label>
+            </div>
+        </section>
+
+        <!-- CONFIRMACIÓN DE CADA FOTO -->
+        <section class="hair-panel" data-panel="confirm" id="panelConfirm">
+            <div class="hair-confirm-photo-wrap">
+                <img id="confirmPhotoPreview" alt="Foto capturada">
+            </div>
+            <div class="hair-panel-body hair-confirm-body">
+                <div class="hair-confirm-icon" id="confirmIcon" aria-hidden="true">✓</div>
+                <h2 id="confirmTitle">¡Se ve muy bien!</h2>
+                <p id="confirmMessage">La imagen tiene suficiente iluminación y nitidez.</p>
+                <button type="button" class="hair-btn-primary" id="useThisPhotoBtn">Usar esta foto</button>
+                <button type="button" class="hair-btn-link" id="retakePhotoBtn">Repetir foto</button>
+            </div>
+        </section>
+
+        <!-- REVISIÓN DE LAS 3 FOTOS -->
+        <section class="hair-panel" data-panel="review" id="panelReview">
+            <header class="hair-topbar">
+                <button type="button" class="hair-icon-btn" id="reviewBackBtn" aria-label="Volver al inicio">&larr;</button>
+                <span class="hair-topbar-title">Tus fotografías</span>
+                <span class="hair-topbar-spacer" aria-hidden="true"></span>
+            </header>
+
+            <div class="hair-panel-body">
+                <p class="hair-eyebrow">Todo listo <span aria-hidden="true">✨</span></p>
+                <p class="hair-review-subtitle">Revisa tus fotos antes de comenzar el análisis.</p>
+
+                <div class="hair-review-grid" id="reviewGrid"></div>
+
+                <p class="hair-review-note">Puedes repetir cualquier foto antes de continuar.</p>
+
+                <button type="button" class="hair-btn-primary" id="analyzeBtn">
+                    <span aria-hidden="true">✨</span> Analizar mi cabello
+                </button>
+                <p class="hair-privacy-note"><span aria-hidden="true">🔒</span> Tus imágenes se utilizarán únicamente para el análisis.</p>
+            </div>
+        </section>
+
+        <!-- ANIMACIÓN DE ANÁLISIS -->
+        <section class="hair-panel" data-panel="analyzing" id="panelAnalyzing">
+            <div class="hair-panel-body hair-analyzing-body">
+                <div class="hair-analyzing-sparkle" aria-hidden="true">✨</div>
+                <h2>Analizando tu cabello...</h2>
+
+                <div class="hair-progress-bar">
+                    <div class="hair-progress-bar-fill" id="analyzingProgressFill"></div>
+                </div>
+                <p class="hair-progress-percent" id="analyzingPercent">0%</p>
+
+                <ul class="hair-analyzing-checklist" id="analyzingChecklist">
+                    <li data-stage="0"><span class="hair-check-icon">○</span> Revisando apariencia</li>
+                    <li data-stage="1"><span class="hair-check-icon">○</span> Analizando hidratación</li>
+                    <li data-stage="2"><span class="hair-check-icon">○</span> Evaluando posibles daños</li>
+                    <li data-stage="3"><span class="hair-check-icon">○</span> Preparando recomendaciones</li>
+                </ul>
+
+                <p class="hair-footnote">Esto puede tomar unos segundos</p>
+            </div>
+        </section>
+
+        <!-- RESULTADOS + RECOMENDACIONES -->
+        <section class="hair-panel" data-panel="results" id="panelResults">
+            <header class="hair-topbar">
+                <a href="index.html" class="hair-icon-btn" aria-label="Volver al inicio">&larr;</a>
+                <span class="hair-topbar-title">Tu análisis <span aria-hidden="true">✨</span></span>
+                <span class="hair-topbar-spacer" aria-hidden="true"></span>
+            </header>
+
+            <div class="hair-panel-body">
+                <p class="hair-results-need-label">Tu cabello necesita</p>
+                <h2 class="hair-results-need" id="resultsNeed">HIDRATACIÓN</h2>
+
+                <div class="hair-results-photo">
+                    <img id="resultsPhoto" alt="Foto de tu cabello">
+                </div>
+
+                <h3 class="hair-section-heading">Características observadas</h3>
+                <div class="hair-metrics" id="resultsMetrics"></div>
+
+                <hr class="hair-divider">
+
+                <h3 class="hair-section-heading">Recomendados para tu cabello</h3>
+                <div class="hair-recommendations" id="resultsRecommendations">
+                    <p class="hair-recommendations-empty" id="recommendationsEmpty" hidden>No encontramos productos disponibles en este momento.</p>
+                </div>
+
+                <a href="products.html" class="hair-btn-secondary" id="viewAllProductsLink">Ver todas las opciones</a>
+            </div>
+        </section>
+
+        <canvas id="hairCaptureCanvas" hidden></canvas>
+    </div>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260820"></script>
+    <script src="js/core/session.js?v=20260820"></script>
+    <script src="js/services/firebase-data.js?v=20260820"></script>
+    <script src="js/services/hair-analysis-config.js?v=20260820"></script>
+    <script src="js/core/app.js?v=20260820"></script>
+    <script src="js/services/cart.js?v=20260820"></script>
+    <script src="js/pages/hair-analysis.js?v=20260820"></script>
+</body>
+</html>

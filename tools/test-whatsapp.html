@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Test WhatsApp Notifications - Monsite</title>
+    <link rel="stylesheet" href="../css/test-whatsapp.css?v=20260813a">
+</head>
+<body>
+    <div class="container">
+        <h1>Test WhatsApp Notifications</h1>
+        <p class="subtitle">Prueba las notificaciones de WhatsApp con Twilio</p>
+        
+        <!-- Mensajes de estado -->
+        <div id="status-message" class="message"></div>
+        
+        <!-- Configuracion -->
+        <div class="section">
+            <h2>Estado de Configuracion</h2>
+            <div id="config-status"></div>
+        </div>
+        
+        <!-- Acciones -->
+        <div class="section">
+            <h2>Acciones</h2>
+            <button id="testWhatsAppBtn" class="btn">
+                <span>WA</span>
+                <span id="btn-text">Enviar WhatsApp de Prueba</span>
+            </button>
+            <button id="viewSampleOrderBtn" class="btn btn-secondary">
+                <span>OR</span>
+                <span>Ver Orden de Ejemplo</span>
+            </button>
+            <button id="clearConsoleBtn" class="btn btn-tertiary">
+                <span>CL</span>
+                <span>Limpiar Consola</span>
+            </button>
+        </div>
+        
+        <!-- Consola -->
+        <div class="section">
+            <h2>Consola de Logs</h2>
+            <div id="console-output"></div>
+        </div>
+        
+        <!-- Orden de ejemplo -->
+        <div id="sample-order-container" style="display: none;">
+            <div class="section">
+                <h2>Orden de Prueba</h2>
+                <div id="sample-order" class="sample-order"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/services/whatsapp-notifications.js"></script>
+    <script src="../js/tools/test-whatsapp.js"></script>
+</body>
+</html>
+
+

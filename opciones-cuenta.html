@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Configuraci&oacute;n de Cuenta - Monsite</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/account.css">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="shipping-banner" id="shippingBanner"> <p>🚚 Envío gratis en compras sobre $30.000</p>
+        <button class="shipping-banner-close" id="shippingBannerClose" type="button" aria-label="Cerrar oferta">
+            &times;
+        </button>
+    </div>
+    <header class="header">
+        <div class="logo-container">
+            <img src="images/logo.jpg" alt="Monsite Logo" class="logo">
+        </div>
+
+        <nav class="nav">
+            <a href="index.html#hero" class="nav-link">Inicio</a>
+            <div class="nav-catalog">
+                <a href="products.html" class="nav-link nav-catalog-trigger" aria-haspopup="true">Cat&aacute;logo</a>
+                <div class="catalog-dropdown" role="menu" aria-label="Men&uacute; de cat&aacute;logo">
+                    <div class="catalog-column">
+                        <h4>Marcas</h4>
+                        <a href="products.html?brand=olaplex" class="catalog-link">Olaplex</a>
+                        <a href="products.html?brand=k18" class="catalog-link">K18</a>
+                        <a href="products.html?brand=living-proof" class="catalog-link">Living Proof</a>
+                        <a href="products.html?brand=moroccanoil" class="catalog-link">Moroccanoil</a>
+                        <a href="products.html?brand=tigi" class="catalog-link">Tigi</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Categor&iacute;as</h4>
+                        <a href="products.html?category=shampoo" class="catalog-link">Limpieza</a>
+                        <a href="products.html?category=tratamiento" class="catalog-link">Tratamientos Capilares</a>
+                        <a href="products.html?category=aceite" class="catalog-link">Aceites &amp; S&eacute;rums</a>
+                        <a href="products.html?category=acondicionador" class="catalog-link">Acondicionadores</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Ver todo</h4>
+                        <a href="products.html" class="catalog-link catalog-link-cta">Ver todos los productos</a>
+                    </div>
+                </div>
+            </div>
+            <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="user-actions">
+            <div class="user-menu-container">
+                <button id="loginBtn" class="user-profile-btn" type="button" style="display:none;">
+                    <div class="user-profile-text">
+                        <span class="user-greeting">Hola, <span id="userName">Usuario</span></span>
+                        <span class="user-profile-link">Tu perfil &gt;</span>
+                    </div>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <button class="dropdown-link" data-href="my-orders.html">Mis Compras</button>
+                    <button class="dropdown-link" data-href="opciones-cuenta.html">Configuraci&oacute;n</button>
+                    <button class="dropdown-link" id="manageProductsBtn" style="display: none; border-top: 1px solid #eee; color: #ff6b35; font-weight: 500;">Gestionar Productos</button>
+                    <button class="dropdown-link" id="logoutBtn">Cerrar sesi&oacute;n</button>
+                </div>
+                <button id="showLoginBtn" class="login-btn" style="display:none;">Iniciar sesi&oacute;n</button>
+                <button id="showRegisterBtn" class="register-btn" style="display:none;">Registrarse</button>
+            </div>
+            <div class="cart-icon" id="cartIcon" role="button" tabindex="0" aria-label="Abrir carrito">
+                <span class="cart-icon-badge" aria-hidden="true"></span>
+                <span class="cart-icon-label">Carrito</span>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <img src="images/logo.jpg" alt="Logo" class="mobile-nav-logo">
+            <span class="mobile-nav-title">Men&uacute;</span>
+            <button class="mobile-close" id="mobileClose">&times;</button>
+        </div>
+
+        <a href="index.html#hero" class="nav-link">Inicio</a>
+        <a href="products.html" class="nav-link">Cat&aacute;logo</a>
+        <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+    </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+        <main class="account-page">
+        <div class="account-container">
+
+            <div class="account-header">
+                <div class="account-header-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </div>
+                <div>
+                    <h1>Mi Cuenta</h1>
+                    <p class="account-subtitle">Administra tu perfil y seguridad</p>
+                </div>
+            </div>
+
+            <section class="account-card">
+                <div class="card-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <h2>Nombre de usuario</h2>
+                </div>
+                <form id="nameForm" class="account-form">
+                    <div class="form-field">
+                        <label for="displayNameInput">Nuevo nombre</label>
+                        <input id="displayNameInput" type="text" required placeholder="Ej: Juan P&eacute;rez">
+                    </div>
+                    <button type="submit" class="account-btn">Guardar cambios</button>
+                </form>
+            </section>
+
+            <section class="account-card">
+                <div class="card-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <h2>Contrase&ntilde;a</h2>
+                </div>
+                <p class="account-hint">Verifica tu contrase&ntilde;a actual antes de cambiarla.</p>
+
+                <div id="googlePasswordNotice" class="provider-notice" style="display:none;">
+                    <div class="provider-notice-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                    </div>
+                    <div>
+                        <p>Tu cuenta inici&oacute; sesi&oacute;n con <strong>Google</strong>. La contrase&ntilde;a se administra desde tu cuenta de Google.</p>
+                        <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" class="account-btn secondary-link">Ir a seguridad de Google &rarr;</a>
+                    </div>
+                </div>
+
+                <form id="verifyPasswordForm" class="account-form">
+                    <div class="form-field">
+                        <label for="currentPasswordInput">Contrase&ntilde;a actual</label>
+                        <input id="currentPasswordInput" type="password" required placeholder="Tu contrase&ntilde;a actual">
+                    </div>
+                    <button type="submit" class="account-btn secondary">Verificar contrase&ntilde;a</button>
+                </form>
+
+                <form id="newPasswordForm" class="account-form spaced-top">
+                    <div class="form-field">
+                        <label for="newPasswordInput">Nueva contrase&ntilde;a</label>
+                        <input id="newPasswordInput" type="password" disabled required placeholder="M&iacute;nimo 12 caracteres">
+                    </div>
+                    <div class="form-field">
+                        <label for="confirmNewPasswordInput">Confirmar contrase&ntilde;a</label>
+                        <input id="confirmNewPasswordInput" type="password" disabled required placeholder="Repite la nueva contrase&ntilde;a">
+                    </div>
+                    <p class="password-hint">M&iacute;nimo 12 caracteres, 1 may&uacute;scula, 1 n&uacute;mero y 1 car&aacute;cter especial.</p>
+                    <button type="submit" id="changePasswordBtn" class="account-btn" disabled>Cambiar contrase&ntilde;a</button>
+                </form>
+            </section>
+
+            <section class="account-card" id="hairAnalysisConsentCard" hidden>
+                <div class="card-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 0-5 5v3H4l1 12h14l1-12h-3V7a5 5 0 0 0-5-5z"/></svg>
+                    <h2>An&aacute;lisis de cabello con IA</h2>
+                </div>
+                <p class="account-hint">Estado de las autorizaciones que otorgaste antes de usar el an&aacute;lisis de caracter&iacute;sticas del cabello con IA.</p>
+
+                <div class="provider-notice" id="hairAnalysisConsentSummary">
+                    <p>Todav&iacute;a no has otorgado autorizaciones para el an&aacute;lisis de cabello.</p>
+                </div>
+
+                <button type="button" class="account-btn secondary" id="revokeHairTrainingBtn" hidden>Revocar autorizaci&oacute;n de entrenamiento</button>
+                <p class="account-hint" id="hairAnalysisRevokeHint" hidden>Al revocarla, dejaremos de usar tus fotos para entrenar la IA a partir de ahora. Esto no afecta el procesamiento ya realizado mientras la autorizaci&oacute;n estuvo vigente.</p>
+            </section>
+
+            <section class="account-card danger">
+                <div class="card-header danger-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <h2>Zona de peligro</h2>
+                </div>
+                <p class="account-hint">Esta acci&oacute;n enviar&aacute; una solicitud de eliminaci&oacute;n para revisi&oacute;n. No es inmediata.</p>
+
+                <form id="deleteRequestForm" class="account-form">
+                    <div class="form-field">
+                        <label for="deleteReasonInput">Motivo (opcional)</label>
+                        <textarea id="deleteReasonInput" rows="3" placeholder="&iquest;Por qu&eacute; deseas eliminar tu cuenta?"></textarea>
+                    </div>
+                    <label class="checkbox-row">
+                        <input id="confirmDeleteRequest" type="checkbox" required>
+                        <span>Confirmo que deseo solicitar la eliminaci&oacute;n de mi cuenta.</span>
+                    </label>
+                    <button type="submit" class="account-btn danger-btn">Solicitar eliminaci&oacute;n</button>
+                </form>
+            </section>
+
+        </div>
+    </main>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Tu Carrito de Compras</h3>
+            <button id="closeCart" class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceder al Pago</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260809"></script>
+    <script src="js/core/session.js?v=20260809"></script>
+    <script src="js/services/firebase-data.js?v=20260220"></script>
+    <script src="js/core/app.js?v=20260827j"></script>
+    <script src="js/services/cart.js?v=20260827j"></script>
+    <script src="js/ui/menu.js?v=20260810e"></script>
+    <script src="js/pages/opciones-cuenta.js?v=20260302"></script>
+</body>
+</html>
+

@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Gestión de Descuentos - Monsite Admin</title>
+    <script src="../js/admin/admin-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260813a">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Admin">
+                    <h2>Panel Admin</h2>
+                </div>
+                <button id="adminDiscountsLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+
+            <!-- Bot&times;n toggle arriba de todo -->
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider">
+                        <span class="theme-knob"></span>
+                    </span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin.html" class="nav-item">Dashboard</a>
+                <a href="admin-products.html" class="nav-item">Productos</a>
+                <a href="admin-discounts.html" class="nav-item active">Descuentos</a>
+                <a href="admin-orders.html" class="nav-item">Ordenes</a>
+                <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión de Códigos de Descuento</h1>
+                    <p>Crea y administra códigos promocionales</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminDiscountsViewStoreBtn" class="btn-secondary btn-view-store">Ver Tienda</button>
+                    <button id="adminDiscountsNewBtn" class="btn-primary">+ Nuevo Código</button>
+                </div>
+            </header>
+
+            <!-- Buscador de Codigos -->
+            <div class="discounts-search-container">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="discountSearchInput" 
+                        class="search-input" 
+                        placeholder="Buscar codigos..."
+                    >
+                    <span id="discountsCount" class="search-count">0 códigos</span>
+                </div>
+            </div>
+
+            <!-- Lista de descuentos -->
+            <div class="discounts-grid-admin" id="discountsList">
+                <!-- Codigos se cargan dinamicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Formulario -->
+    <div class="modal-overlay" id="discountFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="discountFormTitle">Nuevo Código de Descuento</h2>
+                <button type="button" class="modal-close" id="discountModalCloseBtn">x</button>
+            </div>
+
+            <form id="discountForm">
+                <div class="form-group">
+                    <label for="discountCode">Código *</label>
+                    <input type="text" id="discountCode" required placeholder="Ej: SUMMER2024" maxlength="20">
+                    <span class="form-hint">Sin espacios, mayúsculas recomendadas</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="discountType">Tipo de Descuento *</label>
+                        <select id="discountType" required>
+                            <option value="percentage">Porcentaje (%)</option>
+                            <option value="fixed">Monto Fijo ($)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="discountValue">Valor *</label>
+                        <input type="number" id="discountValue" required placeholder="20 o 5000" min="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="discountMaxUses">Límite de Usos Total *</label>
+                        <input type="number" id="discountMaxUses" required placeholder="40" min="1" max="10000">
+                        <span class="form-hint">Ej: primeros 40 usuarios</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="discountPerUser">Usos por Usuario *</label>
+                        <input type="number" id="discountPerUser" required placeholder="1" min="1" max="100">
+                        <span class="form-hint">Máximo de veces que puede usar</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Vista Previa:</label>
+                    <div class="discount-preview">
+                        <p>Código: <strong id="previewCode">SUMMER2024</strong></p>
+                        <p>Descuento: <strong id="previewValue">20%</strong></p>
+                        <p>Disponibilidad: <strong id="previewUses">40 usos máx (1 por usuario)</strong></p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Crear Código</button>
+                    <button type="button" class="btn-secondary" id="discountModalCancelBtn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+  
+    </main>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js"></script>
+    <script src="../js/services/firebase-data.js"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/ui/menu.js"></script>
+    <script src="../js/admin/admin-notifications.js"></script>
+    <script src="../js/ui/theme-toggle.js"></script>
+    <script src="../js/admin/admin-discounts.js"></script>
+</body>
+</html>
+

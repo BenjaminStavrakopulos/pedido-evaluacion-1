@@ -1,0 +1,19 @@
+{
+  "name": "monsite",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Comandos raíz para operar Monsite (frontend estático + backend)",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "start:backend": "npm --prefix backend start",
+    "start:clean": "powershell -ExecutionPolicy Bypass -File ./start-clean.ps1",
+    "smoke": "npm --prefix backend run smoke",
+    "security:scan": "node scripts/security-scan.js",
+    "validate": "node scripts/validate-project.js",
+    "load:test": "py -m locust -f load-tests/locustfile.py",
+    "load:test:unit": "py -m unittest discover -s load-tests -p test_*.py",
+    "coverage:load": "py -m coverage run -m locust -f load-tests/locustfile.py",
+    "coverage:report": "py -m coverage report",
+    "audit:prod": "npm --prefix backend audit --omit=dev --audit-level=moderate"
+  }
+}

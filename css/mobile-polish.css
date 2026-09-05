@@ -1,0 +1,320 @@
+/* ==========================================================================
+   MOBILE POLISH — capa final de refuerzo responsive para todo el sitio.
+   Se carga despues de todas las demas hojas de estilo. Objetivo:
+   evitar overflow horizontal, asegurar targets tactiles y tipografia
+   legible, y dar una red de seguridad a vistas/paneles que no la tengan.
+   ========================================================================== */
+
+/* ---------- Seguridad global anti-overflow ---------- */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+img, svg, video, iframe, table {
+    max-width: 100%;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Evita el zoom automatico de iOS al enfocar inputs */
+@media (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* ---------- Mega-menu de catalogo: evitar overflow en tablets ---------- */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .catalog-dropdown {
+        min-width: min(760px, calc(100vw - 48px));
+        max-width: calc(100vw - 48px);
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* ---------- Header: reforzar en pantallas muy pequenas ---------- */
+@media (max-width: 768px) {
+    /* La nav de escritorio (Inicio/Catalogo/Nosotros) se reemplaza
+       por el menu hamburguesa .mobile-nav; nunca deben convivir. */
+    .header > .nav {
+        display: none !important;
+    }
+
+    .header {
+        grid-template-columns: auto 1fr auto !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 0.72rem 12px !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        backdrop-filter: saturate(1.06) blur(8px);
+    }
+
+    .logo {
+        height: 36px;
+    }
+
+    .logo-container {
+        justify-self: center !important;
+    }
+
+    .user-actions {
+        justify-self: end !important;
+        gap: 7px !important;
+    }
+
+    .user-menu-container {
+        min-width: 0 !important;
+    }
+
+    .menu-toggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 100%);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-toggle span {
+        width: 20px;
+        height: 2px;
+        border-radius: 2px;
+    }
+
+    .mobile-nav {
+        width: min(86vw, 340px);
+        left: calc(-1 * min(86vw, 340px));
+        z-index: 1201;
+        padding: 18px 14px 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+        box-shadow: 10px 0 28px rgba(0, 0, 0, 0.2);
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-nav.active {
+        left: 0;
+    }
+
+    .mobile-nav-header {
+        position: static;
+        margin: 0 0 10px;
+        padding: 14px;
+        background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
+        border-radius: 12px;
+    }
+
+    .mobile-nav-title {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+
+    .mobile-close {
+        width: 36px;
+        height: 36px;
+        min-height: 36px !important;
+        font-size: 1.45rem;
+        color: #4b4b4b;
+    }
+
+    .mobile-nav .nav-link {
+        margin: 0.22rem 0;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.98rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+    .mobile-nav .nav-link:hover,
+    .mobile-nav .nav-link:focus-visible {
+        transform: none;
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-nav-quick-cta {
+        display: block;
+        margin-top: 0.6rem;
+        text-align: center;
+        text-decoration: none;
+        padding: 0.85rem 1rem;
+        border-radius: 11px;
+        background: linear-gradient(135deg, #1f1f1f 0%, #3a3a3a 100%);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.92rem;
+        letter-spacing: 0.01em;
+    }
+
+    .mobile-nav-quick-cta:hover,
+    .mobile-nav-quick-cta:focus-visible {
+        filter: brightness(1.07);
+    }
+
+    .mobile-nav .nav-link::before {
+        content: none !important;
+    }
+
+    .mobile-catalog-submenu {
+        margin: 0.2rem 0.12rem 0.55rem 0.18rem;
+        padding: 0.35rem 0.45rem 0.4rem 0.7rem;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 10px;
+        border-left: 3px solid rgba(0, 0, 0, 0.12);
+    }
+
+    .mobile-catalog-section h4 {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #6f6f6f;
+    }
+
+    .mobile-catalog-submenu .catalog-link {
+        padding: 0.42rem 0;
+        font-size: 0.92rem;
+    }
+
+    .mobile-overlay {
+        z-index: 1200;
+        background: rgba(11, 11, 11, 0.48);
+        backdrop-filter: blur(4px);
+    }
+
+    .cart-icon {
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .logo {
+        height: 32px;
+    }
+
+    .menu-toggle {
+        width: 40px;
+        height: 40px;
+    }
+
+    .mobile-nav {
+        width: min(92vw, 320px);
+        left: calc(-1 * min(92vw, 320px));
+    }
+
+    .user-profile-btn {
+        max-width: 128px !important;
+    }
+
+    .user-greeting {
+        font-size: 0.82rem !important;
+    }
+
+    .user-profile-link {
+        font-size: 0.72rem !important;
+    }
+
+    .cart-icon {
+        padding: 0.45rem 0.6rem !important;
+        gap: 0.3rem !important;
+    }
+
+    .cart-icon-badge {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
+
+    .user-actions {
+        gap: 6px !important;
+    }
+}
+
+/* ---------- Touch targets minimos en mobile ---------- */
+@media (max-width: 768px) {
+    button,
+    .nav-link,
+    .catalog-link,
+    a.account-btn,
+    button.account-btn,
+    .dropdown-link,
+    .filter-btn,
+    .brand-filter-chip {
+        min-height: 40px;
+    }
+}
+
+/* ---------- Red de seguridad para grupos de botones (stack en mobile) ---------- */
+@media (max-width: 480px) {
+    .form-actions,
+    .step-actions,
+    .payment-actions,
+    .detail-actions,
+    .modal-actions .btn-row,
+    .checkbox-row + .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions > *,
+    .payment-actions > *,
+    .detail-actions > * {
+        width: 100%;
+    }
+}
+
+/* ---------- Red de seguridad para modales del sitio ---------- */
+@media (max-width: 480px) {
+    .modal-content,
+    .reset-modal-content,
+    .order-modal .modal-content,
+    .payment-modal .modal-content,
+    .product-modal .modal-content {
+        width: 94vw !important;
+        max-width: 94vw !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+        box-sizing: border-box;
+    }
+}
+
+/* ---------- Tablas del panel admin: scroll horizontal seguro ---------- */
+@media (max-width: 768px) {
+    .products-table,
+    table.orders-management-table,
+    table.products-management-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ---------- Grids genericos: nunca menos de 1 columna en mobile chico ---------- */
+@media (max-width: 480px) {
+    .stats-grid,
+    .quick-actions-grid,
+    .about-grid,
+    .categories-grid,
+    .products-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ---------- Contenedores con ancho fijo: evitar que rompan en mobile ---------- */
+@media (max-width: 480px) {
+    .account-container,
+    .checkout-wrapper,
+    .orders-container,
+    .payment-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        box-sizing: border-box;
+    }
+}

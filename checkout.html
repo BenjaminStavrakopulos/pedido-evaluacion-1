@@ -1,0 +1,385 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Checkout - Monsite</title>
+    <meta name="description" content="Finaliza tu compra en Monsite de forma segura y completa tus datos de envio para recibir tus productos de belleza y cuidado capilar.">
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:title" content="Checkout Monsite">
+    <meta property="og:description" content="Completa tu compra segura en Monsite.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/logo.jpg">
+    <link rel="stylesheet" href="css/styles.css?v=20260809">
+    <link rel="stylesheet" href="css/checkout.css?v=20260810">
+    <script src="js/services/payment-handler.js" defer></script>
+    <script src="js/config/backend-url.js"></script>
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="shipping-banner" id="shippingBanner"> <p>🚚 Envío gratis en compras sobre $30.000</p>
+        <button class="shipping-banner-close" id="shippingBannerClose" type="button" aria-label="Cerrar oferta">
+            &times;
+        </button>
+    </div>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="images/logo.jpg" alt="Monsite Logo" class="logo">
+        </div>
+        
+        <nav class="nav">
+            <a href="index.html#hero" class="nav-link">Inicio</a>
+            <div class="nav-catalog">
+                <a href="products.html" class="nav-link nav-catalog-trigger" aria-haspopup="true">Catálogo</a>
+                <div class="catalog-dropdown" role="menu" aria-label="Menu de Catálogo">
+                    <div class="catalog-column">
+                        <h4>Marcas</h4>
+                        <a href="products.html?brand=olaplex" class="catalog-link">Olaplex</a>
+                        <a href="products.html?brand=k18" class="catalog-link">K18</a>
+                        <a href="products.html?brand=living-proof" class="catalog-link">Living Proof</a>
+                        <a href="products.html?brand=moroccanoil" class="catalog-link">Moroccanoil</a>
+                        <a href="products.html?brand=tigi" class="catalog-link">Tigi</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Categorias</h4>
+                        <a href="products.html?category=shampoo" class="catalog-link">Limpieza</a>
+                        <a href="products.html?category=tratamiento" class="catalog-link">Tratamientos Capilares</a>
+                        <a href="products.html?category=aceite" class="catalog-link">Aceites &amp; Serums</a>
+                        <a href="products.html?category=acondicionador" class="catalog-link">Acondicionadores</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Ver todo</h4>
+                        <a href="products.html" class="catalog-link catalog-link-cta">Ver todos los productos</a>
+                    </div>
+                </div>
+            </div>
+            <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="user-actions">
+            <div class="user-menu-container">
+                <button id="loginBtn" class="user-profile-btn" type="button" style="display:none;">
+                    <div class="user-profile-text">
+                        <span class="user-greeting">Hola, <span id="userName">Usuario</span></span>
+                        <span class="user-profile-link">Tu perfil &gt;</span>
+                    </div>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <button class="dropdown-link" data-href="my-orders.html">Mis Compras</button>
+                    <button class="dropdown-link" data-href="opciones-cuenta.html">Configuración</button>
+                    <button class="dropdown-link" id="manageProductsBtn" style="display: none; border-top: 1px solid #eee; color: #ff6b35; font-weight: 500;">Gestionar Productos</button>
+                    <button class="dropdown-link" id="logoutBtn">Cerrar Sesión</button>
+                </div>
+                <button id="showLoginBtn" class="login-btn" style="display:none;">Iniciar Sesión</button>
+                <button id="showRegisterBtn" class="register-btn" style="display:none;">Registrarse</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav -->
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <img src="images/logo.jpg" alt="Logo" class="mobile-nav-logo">
+            <span class="mobile-nav-title">Menú</span>
+            <button class="mobile-close" id="mobileClose">x</button>
+        </div>
+        <a href="index.html#hero" class="nav-link">Inicio</a>
+        <a href="products.html" class="nav-link">Catálogo</a>
+        <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+    </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Main Checkout Container -->
+    <main class="checkout-container">
+        <div class="checkout-wrapper">
+            <!-- Progress Steps - 4 pasos -->
+            <div class="checkout-steps">
+                <div class="step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Carrito</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Datos</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Pago</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step" data-step="4">
+                    <span class="step-number">4</span>
+                    <span class="step-label">Confirmaci&oacute;n</span>
+                </div>
+            </div>
+
+            <div class="checkout-layout">
+
+                <!-- Columna principal: paneles de cada paso -->
+                <div class="checkout-main">
+
+                    <!-- PASO 1: CARRITO -->
+                    <div class="step-panel active" id="step-panel-1">
+                        <h2 class="step-title">Tu carrito</h2>
+                        <div class="cart-items-checkout" id="cartItemsCheckout"></div>
+
+                        <div class="discount-section">
+                            <h3>C&oacute;digo de Descuento</h3>
+                            <div class="discount-input-group">
+                                <input type="text" id="discountCode" class="discount-input" placeholder="Ingresa tu c&oacute;digo" maxlength="20">
+                                <button type="button" class="btn-apply-discount" id="applyDiscountBtn">Aplicar</button>
+                            </div>
+                            <div id="discountMessage" class="discount-message"></div>
+                            <div id="discountApplied" class="discount-applied" style="display: none;">
+                                <div class="discount-summary">
+                                    <span>Descuento (<span id="discountCodeName">-</span>):</span>
+                                    <span id="discountAmount" class="discount-amount">-$0</span>
+                                </div>
+                                <button type="button" class="btn-remove-discount" id="removeDiscountBtn">Remover</button>
+                            </div>
+                        </div>
+
+                        <div class="step-actions">
+                        <a href="products.html" class="btn-back">&larr; Seguir comprando</a>
+                            <button type="button" class="btn-primary-checkout" id="continueToShipping">Continuar &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: DATOS DE ENV&Aacute;O -->
+                    <div class="step-panel" id="step-panel-2" style="display:none">
+                        <form id="checkoutForm" class="checkout-form">
+                            <h2 class="step-title">Datos de Env&iacute;o</h2>
+
+                            <div id="savedAddressCard" class="saved-address-card" style="display: none;">
+                                <p class="saved-address-title">Direcci&oacute;n guardada</p>
+                                <p id="savedAddressText" class="saved-address-text"></p>
+                                <button type="button" id="useSavedAddressBtn" class="btn-use-saved-address">Usar esta direcci&oacute;n</button>
+                            </div>
+
+                            <fieldset>
+                                <legend>Informaci&oacute;n Personal</legend>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="firstName">Nombre *</label>
+                                        <input type="text" id="firstName" name="firstName" required placeholder="Ej: Juan">
+                                        <span class="error-message" id="firstNameError"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Apellido *</label>
+                                        <input type="text" id="lastName" name="lastName" required placeholder="Ej: Garc&iacute;a">
+                                        <span class="error-message" id="lastNameError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rut">RUT *</label>
+                                    <input type="text" id="rut" name="rut" required placeholder="Ej: 12.345.678-9">
+                                    <span class="error-message" id="rutError"></span>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="email">Email *</label>
+                                        <input type="email" id="email" name="email" required placeholder="Ej: correo@ejemplo.com">
+                                        <span class="error-message" id="emailError"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Tel&eacute;fono *</label>
+                                        <input type="tel" id="phone" name="phone" required placeholder="Ej: +56912345678">
+                                        <span class="error-message" id="phoneError"></span>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Direcci&oacute;n de Env&iacute;o</legend>
+                                <div class="form-group">
+                                    <label for="street">Calle y N&uacute;mero *</label>
+                                    <input type="text" id="street" name="street" required placeholder="Ej: Paseo La Plaza 123">
+                                    <span class="error-message" id="streetError"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="apartment">Departamento / Casa (Opcional)</label>
+                                    <input type="text" id="apartment" name="apartment" placeholder="Ej: Depto 4B">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="region">Regi&oacute;n *</label>
+                                        <select id="region" name="region" required>
+                                            <option value="">Selecciona una regi&oacute;n</option>
+                                            <option value="Region de Arica y Parinacota">Arica y Parinacota</option>
+                                            <option value="Region de Tarapaca">Tarapac&aacute;</option>
+                                            <option value="Region de Antofagasta">Antofagasta</option>
+                                            <option value="Region de Atacama">Atacama</option>
+                                            <option value="Region de Coquimbo">Coquimbo</option>
+                                            <option value="Region de Valparaiso">Valpara&iacute;so</option>
+                                            <option value="Region Metropolitana">Metropolitana</option>
+                                            <option value="Region del Libertador General Bernardo O'Higgins">O'Higgins</option>
+                                            <option value="Region del Maule">Maule</option>
+                                            <option value="Region de Nuble">&Ntilde;uble</option>
+                                            <option value="Region del Biobio">Biob&iacute;o</option>
+                                            <option value="Region de La Araucania">La Araucan&iacute;a</option>
+                                            <option value="Region de Los Rios">Los R&iacute;os</option>
+                                            <option value="Region de Los Lagos">Los Lagos</option>
+                                            <option value="Region de Aysen">Ays&eacute;n</option>
+                                            <option value="Region de Magallanes">Magallanes</option>
+                                        </select>
+                                        <span class="error-message" id="regionError"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="city">Ciudad / Comuna *</label>
+                                        <select id="city" name="city" required>
+                                            <option value="">Selecciona una ciudad</option>
+                                        </select>
+                                        <span class="error-message" id="cityError"></span>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Notas Adicionales</legend>
+                                <div class="form-group">
+                                    <label for="notes">Instrucciones de entrega (Opcional)</label>
+                                    <textarea id="notes" name="notes" placeholder="Ej: Tocar timbre 3 veces, dejar con conserje, etc."></textarea>
+                                </div>
+                            </fieldset>
+
+                            <div class="step-actions">
+                                <button type="button" class="btn-back" id="backToCart">&larr; Volver</button>
+                                <button type="submit" class="btn-primary-checkout">Continuar al pago &rarr;</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- PASO 3: PAGO -->
+                    <div class="step-panel" id="step-panel-3" style="display:none">
+                        <h2 class="step-title">M&eacute;todo de Pago</h2>
+
+                        <div class="payment-security-notice">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                            <span>Todas las transacciones son seguras y est&aacute;n protegidas.</span>
+                        </div>
+
+                        <label class="payment-method-card" for="paymentMethodMp">
+                            <input type="radio" name="paymentMethod" id="paymentMethodMp" value="mercadopago" class="payment-method-radio" checked>
+                            <div class="payment-method-header">
+                                <div class="payment-radio-dot"></div>
+                                <div class="payment-method-info">
+                                    <strong>Mercado Pago</strong>
+                                    <p>Tarjeta de cr&eacute;dito, d&eacute;bito, transferencia y m&aacute;s</p>
+                                </div>
+                                <div class="payment-logos">
+                                    <span class="card-logo visa">VISA</span>
+                                    <span class="card-logo master">MC</span>
+                                </div>
+                            </div>
+                            <p class="payment-method-desc">
+                                Ser&aacute;s redirigido al portal seguro de Mercado Pago para completar tu pago con el medio que prefieras.
+                            </p>
+                        </label>
+
+                        <label class="payment-method-card" for="paymentMethodWebpay">
+                            <input type="radio" name="paymentMethod" id="paymentMethodWebpay" value="webpay" class="payment-method-radio">
+                            <div class="payment-method-header">
+                                <div class="payment-radio-dot"></div>
+                                <div class="payment-method-info">
+                                    <strong>Webpay (Transbank)</strong>
+                                    <p>Tarjeta de cr&eacute;dito, d&eacute;bito y prepago</p>
+                                </div>
+                                <div class="payment-logos">
+                                    <span class="card-logo webpay">WEBPAY</span>
+                                </div>
+                            </div>
+                            <p class="payment-method-desc">
+                                Ser&aacute;s redirigido al portal seguro de Webpay para completar tu pago con tarjeta.
+                            </p>
+                        </label>
+
+                        <div class="step-actions">
+                            <button type="button" class="btn-back" id="backToShipping">&larr; Volver</button>
+                            <button type="button" class="btn-primary-checkout btn-pay" id="payNowBtn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:middle;margin-right:5px;"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                                <span id="payNowText">Pagar ahora</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PASO 4: CONFIRMACI&Aacute;“N -->
+                    <div class="step-panel" id="step-panel-4" style="display:none">
+                        <div class="confirmation-panel">
+                            <div class="confirmation-check">âœ“</div>
+                            <h2 class="confirmation-title">&iexcl;Compra realizada!</h2>
+                            <p class="confirmation-subtitle">Recibir&aacute;s un correo con los detalles de tu compra.</p>
+                            <div class="confirmation-details" id="confirmationDetails"></div>
+                            <div class="step-actions centered">
+                                <button type="button" class="btn-primary-checkout" id="goToHomeBtn">Volver a la tienda</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sidebar: Resumen del pedido -->
+                <aside class="checkout-sidebar">
+                    <button type="button" class="summary-toggle" id="summaryToggle" aria-expanded="false">
+                        <span class="toggle-label">Resumen del pedido</span>
+                        <span class="summary-total-preview" id="summaryTotalPreview">$0</span>
+                        <svg class="toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+
+                    <div class="sidebar-body" id="sidebarBody">
+                        <div class="sidebar-items" id="sidebarItems"></div>
+
+                        <div class="free-shipping-bar" id="freeShippingBar"></div>
+
+                        <div class="summary-totals">
+                            <div class="totals-row">
+                                <span>Subtotal</span>
+                                <span id="subtotalAmount">$0</span>
+                            </div>
+                            <div class="totals-row">
+                                <span>Env&iacute;o</span>
+                                <span id="shippingAmount">$0</span>
+                            </div>
+                            <div class="totals-row" id="discountRow" style="display:none;">
+                                <span>Descuento</span>
+                                <span id="discountTotalAmount" class="text-green">-$0</span>
+                            </div>
+                            <div class="totals-row total">
+                                <span>Total</span>
+                                <span id="totalAmount">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Monsite Belleza &amp; Cuidado Capilar. Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260809"></script>
+    <script src="js/core/storage.js?v=20260809"></script>
+    <script src="js/core/session.js?v=20260809"></script>
+    <script src="js/config/payment-runtime.js?v=20260809"></script>
+    <script src="js/services/firebase-data.js?v=20260809"></script>
+    <script src="js/core/app.js?v=20260827n"></script>
+    <script src="js/ui/menu.js?v=20260810e"></script>
+    <script src="js/services/cart.js?v=20260827n"></script>
+    <script src="js/services/whatsapp-notifications.js?v=20260809"></script>
+    <script src="js/pages/checkout.js?v=20260827n"></script>
+</body>
+</html>

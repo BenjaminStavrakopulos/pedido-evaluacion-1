@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Gestión de Ordenes - Monsite Admin</title>
+    <script src="../js/admin/admin-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260810k">
+        <script src="../js/services/firebase-data.js?v=20260828a"></script>
+        <script src="../js/core/receipt.js?v=20260828a"></script>
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Admin">
+                    <h2>Panel Admin</h2>
+                </div>
+                <button id="adminOrdersLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+
+            <!-- Bot&times;n toggle arriba de todo -->
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider">
+                        <span class="theme-knob"></span>
+                    </span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="admin.html" class="nav-item">Dashboard</a>
+                <a href="admin-products.html" class="nav-item">Productos</a>
+                <a href="admin-discounts.html" class="nav-item">Descuentos</a>
+                <a href="admin-orders.html" class="nav-item active">Ordenes</a>
+                <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión de Ordenes</h1>
+                    <p>Administra todas las ordenes de compra de tus clientes</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminOrdersViewStoreBtn" class="btn-secondary btn-view-store">Ver Tienda</button>
+                </div>
+            </div>
+
+            <!-- Estadisticas de ordenes -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="totalOrders">0</h3>
+                        <p>Total ordenes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚚</div>
+                    <div class="stat-info">
+                        <h3 id="pendingOrders">0</h3>
+                        <p>Por Enviar</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 id="completedOrders">0</h3>
+                        <p>Completadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="totalRevenue">$0</h3>
+                        <p>Ingresos Totales</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weekly-orders-filter">
+                <label for="ordersWeekFilter">Semana de ingresos</label>
+                <select id="ordersWeekFilter"></select>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters-section order-filters">
+                <div class="filters-row order-filters-row">
+                    <input type="text" id="searchOrders" placeholder="Buscar por numero de orden, cliente..." 
+                           class="order-search-input">
+                    
+                    <select id="filterStatus" class="order-filter-select">
+                        <option value="all">Todos los Estados</option>
+                        <option value="paid">Pagadas (por enviar)</option>
+                        <option value="shipped">Enviadas</option>
+                        <option value="delivered">Entregadas</option>
+                        <option value="cancelled">Canceladas</option>
+                        <option value="refunded">Devueltas</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tabla de ordenes -->
+            <div class="products-table-container">
+                <div class="table-responsive">
+                    <table class="products-table orders-management-table">
+                        <thead>
+                            <tr>
+                                <th>Orden #</th>
+                                <th>Cliente</th>
+                                <th>Telefono</th>
+                                <th>Productos</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr>
+                                <td colspan="8" class="table-loading-cell">
+                                    Cargando ordenes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Detalles de Orden -->
+    <div class="form-modal" id="orderDetailsModal">
+        <div class="modal-content modal-content-lg">
+            <div class="modal-header">
+                <h3 id="orderModalTitle">Detalles de Orden</h3>
+                <button id="orderDetailsCloseBtn" class="close-modal">x</button>
+            </div>
+            
+            <div id="orderDetailsContent" class="modal-body-padded">
+                <!-- Contenido dinamico -->
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="orderDetailsCloseActionBtn" class="btn-secondary">Cerrar</button>
+                    <button type="button" id="orderReceiptBtn" class="btn-secondary">Ver boleta</button>
+                    <button type="button" id="orderPrintBtn" class="btn-primary">ID Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cambio de Estado -->
+    <div class="form-modal" id="statusModal">
+        <div class="modal-content modal-content-md">
+            <div class="modal-header">
+                <h3>Cambiar Estado de Orden</h3>
+                <button id="statusModalCloseBtn" class="close-modal">x</button>
+            </div>
+            
+            <div class="modal-body-padded">
+                <input type="hidden" id="currentOrderId">
+                
+                <div class="form-group">
+                    <label>Nuevo Estado</label>
+                    <select id="newOrderStatus" class="form-control-compact">
+                        <option value="paid">Pagada (por enviar)</option>
+                        <option value="shipped">Enviada</option>
+                        <option value="delivered">Entregada</option>
+                        <option value="cancelled">Cancelada</option>
+                        <option value="refunded">Devuelta</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Nota (opcional)</label>
+                    <textarea id="statusNote" rows="3" placeholder="Agrega una nota sobre el cambio de estado..." 
+                              class="form-control-compact"></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="statusModalCancelBtn" class="btn-secondary">Cancelar</button>
+                <button type="button" id="statusModalUpdateBtn" class="btn-primary">Actualizar Estado</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js?v=20260809"></script>
+    <script src="../js/services/firebase-data.js?v=20260828a"></script>
+    <script src="../js/core/receipt.js?v=20260828a"></script>
+    <script src="../js/services/auth.js?v=20260809"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/admin-orders.js?v=20260828a"></script>
+    <script src="../js/ui/theme-toggle.js?v=20260220"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+
+</html>
+
+

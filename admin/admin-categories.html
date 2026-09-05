@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+        <title>Gestión de Categorías - Monsite Admin</title>
+        <script src="../js/admin/admin-auth-guard.js"></script>
+        <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+        <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260813a">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <script src="../js/admin/redirect-to-products.js"></script>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+    <div class="admin-sidebar-top">
+        <div class="admin-logo">
+            <img src="../images/logo.jpg" alt="Monsite Admin">
+            <h2>Panel Admin</h2>
+        </div>
+        <button id="adminCategoriesLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+    </div>
+    
+    <!-- Boton toggle arriba de todo -->
+    <div class="theme-toggle-container">
+        <button class="theme-toggle-btn" id="themeToggle">
+            <span class="theme-slider">
+                <span class="theme-knob"></span>
+            </span>
+            <span class="theme-text">Modo Oscuro</span>
+        </button>
+    </div>
+    
+    <nav class="admin-nav">
+        <a href="admin.html" class="nav-item">Dashboard</a>
+        <a href="admin-products.html" class="nav-item">Productos</a>
+        <a href="admin-discounts.html" class="nav-item">Descuentos</a>
+        <a href="admin-orders.html" class="nav-item">Ordenes</a>
+        <a href="admin-desarrollo.html" class="nav-item">Desarrollo</a>
+    </nav>
+</aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión de Categorías</h1>
+                    <p>Organiza tus productos por categorías</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="adminCategoriesViewStoreBtn" class="btn-secondary btn-view-store">Ver Tienda</button>
+                    <button class="btn-primary" id="newCategoryBtn">+ Nueva Categoría</button>
+                </div>
+            </header>
+
+            <!-- Buscador de Categorias -->
+            <div class="categories-search-container">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="categorySearchInput" 
+                        class="search-input" 
+                        placeholder="Buscar categorias por nombre..."
+                    >
+                    <span id="categoriesCount" class="search-count">0 categorias</span>
+                </div>
+            </div>
+
+            <!-- Lista de Categorias -->
+            <div class="categories-grid-admin" id="categoriesList">
+                <!-- Categorias se cargan dinamicamente -->
+            </div>
+
+            <!-- Formulario de Categoria -->
+            <div class="form-modal" id="categoryFormModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="categoryFormTitle">Nueva Categoría</h3>
+                        <button class="close-modal" id="categoryModalCloseBtn">x</button>
+                    </div>
+                    <form id="categoryForm">
+                        <input type="hidden" id="categoryId">
+                        
+                        <div class="form-group">
+                            <label>Nombre de la Categoría *</label>
+                            <input type="text" id="categoryName" required placeholder="Ej: Shampoos, Tratamientos...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>ID de la Categoria *</label>
+                            <input type="text" id="categoryIdInput" required placeholder="Ej: shampoo, tratamiento">
+                            <small>Usa solo letras minúsculas y sin espacios</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Color de la Categoría</label>
+                            <input type="color" id="categoryColor" value="#1a1a1a">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="categoryDescription" rows="3" placeholder="Describe esta categoría..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="categoryModalCancelBtn">Cancelar</button>
+                            <button type="submit" class="btn-primary">Guardar Categoría</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js"></script>
+    <script src="../js/services/firebase-data.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/admin-notifications.js"></script>
+    <script src="../js/admin/admin-categories.js"></script>
+    <script src="../js/ui/theme-toggle.js"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+</html>
+

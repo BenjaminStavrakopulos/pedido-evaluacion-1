@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Iniciar Sesion - Monsite</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css?v=20260810b">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810c">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo-row" role="navigation" aria-label="Volver al inicio">
+                <a href="index.html" class="auth-back-link" aria-label="Volver al inicio">&larr;</a>
+                <a href="index.html" class="auth-logo-link" aria-label="Ir al inicio">
+                    <div class="auth-logo">
+                        <img src="images/logo.jpg" alt="HairIA">
+                        <h1>Monsite</h1>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Pestanas Login/Registro -->
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+                <button class="tab-btn" data-tab="register">Registro</button>
+            </div>
+
+            <p class="auth-guidance" id="authGuidance">Ingresa con tu cuenta para comprar, revisar ordenes y continuar tu carrito de forma segura.</p>
+
+            <!-- Formulario Login -->
+            <form class="auth-form active" id="loginForm" data-form="login">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="email-input">
+                        <input type="email" id="loginEmail" required placeholder="tu@email.com">
+                        <span class="input-icon">@</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="loginPassword" required placeholder="********">
+                        <span class="input-icon">*</span>
+                        <button type="button" class="toggle-password" data-target="loginPassword">SHOW</button>
+                    </div>
+                </div>
+
+
+                <div class="form-options">
+                    <a href="#" class="forgot-password">Olvidaste tu contraseña?</a>
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    <span class="btn-text">Ingresar</span>
+                    <span class="btn-loading">...</span>
+                </button>
+
+                <div class="auth-divider">
+                    <span>o continuar con</span>
+                </div>
+
+                <button type="button" class="social-btn google-btn">
+                    <span>Google</span>
+                </button>
+
+            </form>
+
+            <!-- Formulario Registro -->
+            <form class="auth-form" id="registerForm" data-form="register">
+                <div class="form-group">
+                    <label for="registerName">Nombre Completo</label>
+                    <div class="email-input">
+                        <input type="text" id="registerName" required placeholder="Juan Perez">
+                        <span class="input-icon">U</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <div class="email-input">
+                        <input type="email" id="registerEmail" required placeholder="tu@email.com">
+                        <span class="input-icon">@</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerPassword" required placeholder="********">
+                        <span class="input-icon">*</span>
+                        <button type="button" class="toggle-password" data-target="registerPassword">SHOW</button>
+                    </div>
+                    <small>Debe tener al menos 12 caracteres, 1 mayúscula, 1 número y 1 carácter especial.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar Contraseña</label>
+                    <div class="password-input">
+                        <input type="password" id="registerConfirmPassword" required placeholder="********">
+                        <span class="input-icon">*</span>
+                        <button type="button" class="toggle-password" data-target="registerConfirmPassword">SHOW</button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="acceptTerms" required>
+                        <span class="checkmark"></span>
+                        Acepto los&nbsp<a href="#"> terminos y condiciones</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    <span class="btn-text">Crear Cuenta</span>
+                    <span class="btn-loading">...</span>
+                </button>
+
+            </form>
+        </div>
+
+        <!-- Modal Restablecer Contrasena -->
+        <div class="reset-modal" id="resetPasswordModal" aria-hidden="true">
+            <div class="reset-modal-content" role="dialog" aria-labelledby="resetPasswordTitle">
+                <button type="button" class="reset-modal-close" id="resetPasswordClose" aria-label="Cerrar">x</button>
+                <h2 id="resetPasswordTitle">Restablecer Contraseña</h2>
+                <p class="reset-modal-subtitle">Ingresa el correo asociado a tu cuenta y te enviaremos un link para restablecer tu contrasena.</p>
+
+                <form id="resetPasswordForm" class="reset-modal-form">
+                    <div class="form-group">
+                        <label for="resetEmail">Email</label>
+                        <input type="email" id="resetEmail" required placeholder="tu@email.com">
+                        <span class="input-icon">@</span>
+                    </div>
+
+                    <div class="reset-modal-actions">
+                        <button type="button" class="reset-btn secondary" id="resetPasswordCancel">Cancelar</button>
+                        <button type="submit" class="reset-btn primary" id="resetPasswordSubmit">Enviar Solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notificaciones -->
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260828a"></script>
+    <script type="module" src="js/services/auth.js?v=20260828a"></script>
+
+    <script src="js/pages/login-redirect.js"></script>
+    
+</body>
+</html>
+

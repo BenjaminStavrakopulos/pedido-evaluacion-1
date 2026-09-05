@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias del backend
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Verificar sintaxis del servidor (backend)
+        working-directory: ./backend
+        run: node --check server.js
+
+      - name: Validar estructura del proyecto (HTML/JS)
+        run: node scripts/validate-project.js
+
+      - name: Escaneo básico de seguridad (buscar secretos filtrados)
+        run: node scripts/security-scan.js

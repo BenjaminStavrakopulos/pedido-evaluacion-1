@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Pago Rechazado - Monsite</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/payment-status.css?v=20260813a">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="shipping-banner" id="shippingBanner"> <p>🚚 Envío gratis en compras sobre $30.000</p>
+        <button class="shipping-banner-close" id="shippingBannerClose" type="button" aria-label="Cerrar oferta">
+            &times;
+        </button>
+    </div>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="images/logo.jpg" alt="Monsite Logo" class="logo">
+        </div>
+        
+        <nav class="nav">
+            <a href="index.html#hero" class="nav-link">Inicio</a>
+            <div class="nav-catalog">
+                <a href="products.html" class="nav-link nav-catalog-trigger" aria-haspopup="true">Catálogo</a>
+                <div class="catalog-dropdown" role="menu" aria-label="Menú de catálogo">
+                    <div class="catalog-column">
+                        <h4>Marcas</h4>
+                        <a href="products.html?brand=olaplex" class="catalog-link">Olaplex</a>
+                        <a href="products.html?brand=k18" class="catalog-link">K18</a>
+                        <a href="products.html?brand=living-proof" class="catalog-link">Living Proof</a>
+                        <a href="products.html?brand=moroccanoil" class="catalog-link">Moroccanoil</a>
+                        <a href="products.html?brand=tigi" class="catalog-link">Tigi</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Categorías</h4>
+                        <a href="products.html?category=shampoo" class="catalog-link">Limpieza</a>
+                        <a href="products.html?category=tratamiento" class="catalog-link">Tratamientos Capilares</a>
+                        <a href="products.html?category=aceite" class="catalog-link">Aceites &amp; Sérums</a>
+                        <a href="products.html?category=acondicionador" class="catalog-link">Acondicionadores</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Ver todo</h4>
+                        <a href="products.html" class="catalog-link catalog-link-cta">Ver todos los productos</a>
+                    </div>
+                </div>
+            </div>
+            <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="user-actions">
+            <a href="my-orders.html" id="myOrdersBtn" class="my-orders-btn">📦 Mis Órdenes</a>
+            <button id="loginBtn" class="login-btn">Iniciar Sesión</button>
+            <div class="cart-icon" id="cartIcon" role="button" tabindex="0" aria-label="Abrir carrito">
+                <span class="cart-icon-badge" aria-hidden="true"></span>
+                <span class="cart-icon-label">Carrito</span>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <img src="images/logo.jpg" alt="Logo" class="mobile-nav-logo">
+            <span class="mobile-nav-title">Menú</span>
+            <button class="mobile-close" id="mobileClose">×</button>
+        </div>
+        <a href="index.html#hero" class="nav-link">Inicio</a>
+        <a href="products.html" class="nav-link">Catálogo</a>
+        <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+    </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="failure-container">
+        <div class="failure-card">
+            <div class="failure-icon">❌</div>
+            <h1>Pago Rechazado</h1>
+            <p>Tu transacción no pudo ser procesada. Por favor intenta de nuevo con otra tarjeta.</p>
+
+            <div class="error-message">
+                <strong>Posibles razones:</strong>
+                <ul>
+                    <li>Fondos insuficientes</li>
+                    <li>Tarjeta rechazada por el banco</li>
+                    <li>Datos incorrectos</li>
+                    <li>Tarjeta expirada</li>
+                </ul>
+            </div>
+
+            <div class="order-details" id="orderDetails">
+                <!-- Detalles de la orden -->
+            </div>
+
+            <div class="action-buttons">
+                <a href="products.html" class="btn btn-primary">Volver a la Tienda</a>
+                <a href="my-orders.html" class="btn btn-secondary">Ver Mis Órdenes</a>
+                <a href="index.html" class="btn btn-secondary">Ir a Inicio</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Monsite Belleza & Cuidado Capilar. Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260809"></script>
+    <script src="js/core/session.js?v=20260809"></script>
+    <script src="js/config/payment-runtime.js?v=20260809"></script>
+    <script src="js/services/firebase-data.js?v=20260220"></script>
+    <script src="js/core/app.js?v=20260810b"></script>
+    <script src="js/ui/menu.js?v=20260810e"></script>
+    <script src="js/pages/payment-failure-page.js"></script>
+</body>
+</html>
+

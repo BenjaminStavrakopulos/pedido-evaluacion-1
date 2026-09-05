@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' ws://127.0.0.1:3001 ws://localhost:3001 https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Panel Bodega - Monsite</title>
+    <script src="../js/admin/bodeguero-auth-guard.js"></script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <script src="../js/admin/admin-theme.js"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css?v=20260822bodega5">
+    <link rel="stylesheet" href="../css/mobile-polish.css?v=20260810c">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-top">
+                <div class="admin-logo">
+                    <img src="../images/logo.jpg" alt="Monsite Bodega">
+                    <h2>Panel Bodega</h2>
+                </div>
+                <button id="warehouseLogoutBtn" class="logout-btn logout-btn-compact" type="button">Salir</button>
+            </div>
+
+            <div class="theme-toggle-container">
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-slider"><span class="theme-knob"></span></span>
+                    <span class="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="#" id="warehouseNavOrders" class="nav-item active" data-view="orders">Pedidos</a>
+                <a href="#" id="warehouseNavItems" class="nav-item" data-view="items">Productos</a>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-welcome">
+                    <h1>Gestión simple de pedidos</h1>
+                    <p>Vista para apoyo operativo: revisar pedidos, imprimir etiqueta, actualizar estado y marcar stock.</p>
+                </div>
+                <div class="admin-actions">
+                    <button id="warehouseReloadBtn" class="btn-secondary">Actualizar lista</button>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3 id="warehouseTotalOrders">0</h3>
+                        <p>Pedidos visibles</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚚</div>
+                    <div class="stat-info">
+                        <h3 id="warehousePendingShip">0</h3>
+                        <p>Por enviar</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3 id="warehouseOutOfStock">0</h3>
+                        <p>Marcados sin stock</p>
+                    </div>
+                </div>
+            </div>
+
+            <section id="warehouseOrdersView" class="warehouse-view-panel active" data-view-panel="orders">
+                <div class="filters-section order-filters">
+                    <div class="filters-row order-filters-row">
+                        <input type="text" id="warehouseSearch" placeholder="Buscar por orden, cliente o telefono..." class="order-search-input">
+                        <select id="warehouseStatusFilter" class="order-filter-select">
+                            <option value="all">Todos los estados</option>
+                            <option value="paid">Pendiente empaque</option>
+                            <option value="shipped">Enviadas</option>
+                            <option value="delivered">Entregadas</option>
+                            <option value="refunded">Devolución / sin stock</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-table-container">
+                    <div class="table-responsive">
+                        <table class="products-table orders-management-table">
+                            <thead>
+                                <tr>
+                                    <th>Orden</th>
+                                    <th>Cliente</th>
+                                    <th>Telefono</th>
+                                    <th>Fecha/Hora</th>
+                                    <th>Estado</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warehouseOrdersBody">
+                                <tr>
+                                    <td colspan="7" class="table-loading-cell">Cargando pedidos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="warehouseItemsView" class="recent-orders-products warehouse-view-panel" data-view-panel="items">
+                <header class="admin-header" style="padding: 0.5rem 0; border-bottom: 0;">
+                    <div class="admin-welcome">
+                        <h2 style="font-size: 1.25rem; margin: 0;">Productos de pedidos recientes</h2>
+                        <p style="margin: 0.25rem 0 0;">Marca stock por producto. Si hay stock, no necesitas tocar nada.</p>
+                    </div>
+                </header>
+
+                <div class="filters-section order-filters" style="margin-top: 0.5rem;">
+                    <div class="filters-row order-filters-row">
+                        <input type="text" id="warehouseItemsSearch" placeholder="Buscar por producto o pedido..." class="order-search-input">
+                    </div>
+                </div>
+
+                <div class="products-table-container">
+                    <div class="table-responsive">
+                        <table class="products-table orders-management-table">
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Imagen</th>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Stock producto</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warehouseItemsBody">
+                                <tr>
+                                    <td colspan="6" class="table-loading-cell">Cargando productos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="form-modal" id="warehouseOrderDetailsModal">
+        <div class="modal-content modal-content-lg">
+            <div class="modal-header">
+                <h3>Detalle de pedido</h3>
+                <button id="warehouseOrderDetailsCloseBtn" class="close-modal">x</button>
+            </div>
+            <div id="warehouseOrderDetailsContent" class="modal-body-padded"></div>
+            <div class="form-actions">
+                <button type="button" id="warehouseOrderDetailsCloseActionBtn" class="btn-secondary">Cerrar</button>
+                <button type="button" id="warehouseOrderPrintBtn" class="btn-primary">Imprimir etiqueta</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-modal" id="warehousePrintPreviewModal">
+        <div class="modal-content modal-content-lg" style="max-width: 980px;">
+            <div class="modal-header">
+                <h3>Vista previa de etiqueta</h3>
+                <button id="warehousePrintPreviewCloseBtn" class="close-modal">x</button>
+            </div>
+            <div class="modal-body-padded" style="padding-top: 0;">
+                <p style="margin: 0 0 0.75rem; color: var(--admin-text-light);">Revisa la etiqueta antes de imprimir.</p>
+                <div style="background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 10px; padding: 0.75rem;">
+                    <iframe id="warehousePrintPreviewFrame" title="Vista previa etiqueta" style="width:100%; height:560px; border:0; background:white; border-radius:8px;"></iframe>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="warehousePrintPreviewCancelBtn" class="btn-secondary">Cancelar</button>
+                <button type="button" id="warehousePrintPreviewConfirmBtn" class="btn-primary">Imprimir ahora</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/config/firebase-config.js?v=20260822bodega5"></script>
+    <script src="../js/services/firebase-data.js?v=20260827l"></script>
+    <script src="../js/services/auth.js?v=20260822bodega5"></script>
+    <script src="../js/admin/admin-logout.js"></script>
+    <script src="../js/admin/bodeguero.js?v=20260827m"></script>
+    <script src="../js/ui/theme-toggle.js?v=20260220"></script>
+    <script src="../js/ui/menu.js"></script>
+</body>
+</html>

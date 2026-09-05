@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://sdk.mercadopago.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.mercadopago.com http://localhost:3000 https://api.monsite.cl https://*.ngrok-free.dev; frame-src 'self' https://monsite-85424.firebaseapp.com https://accounts.google.com https://www.mercadopago.com https://www.mercadopago.cl https://www.mercadolibre.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.mercadopago.com https://www.mercadopago.cl; style-src-attr 'unsafe-inline';">
+    <title>Productos - Monsite</title>
+    <meta name="description" content="Explora el catalogo de Monsite con productos de cuidado capilar, belleza y tratamientos profesionales para todo tipo de cabello.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Productos Monsite">
+    <meta property="og:description" content="Catalogo de productos de belleza y cuidado capilar en Monsite.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/logo.jpg">
+    <link rel="canonical" href="products.html">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+    <!-- RUTAS CSS CORRECTAS -->
+    <link rel="stylesheet" href="css/styles.css?v=20260827k">
+    <link rel="stylesheet" href="css/products.css?v=20260810a">
+    <link rel="stylesheet" href="css/mobile-polish.css?v=20260810f">
+</head>
+<body>
+    <div class="shipping-banner" id="shippingBanner"> <p>🚚 Envío gratis en compras sobre $30.000</p>
+        <button class="shipping-banner-close" id="shippingBannerClose" type="button" aria-label="Cerrar oferta">
+            &times;
+        </button>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="logo-container">
+            <a href="index.html" class="logo-link" aria-label="Ir al inicio">
+                <img src="images/logo.jpg" alt="HairIA Logo" class="logo">
+            </a>
+        </div>
+        
+        <!-- Menu desktop (visible en pantallas grandes) -->
+        <nav class="nav">
+            <a href="index.html#hero" class="nav-link">Inicio</a>
+            <div class="nav-catalog">
+                <a href="products.html" class="nav-link nav-catalog-trigger" aria-haspopup="true">Catalogo</a>
+                <div class="catalog-dropdown" role="menu" aria-label="Menu de catalogo">
+                    <div class="catalog-column">
+                        <h4>Marcas</h4>
+                        <a href="products.html?brand=olaplex" class="catalog-link">Olaplex</a>
+                        <a href="products.html?brand=k18" class="catalog-link">K18</a>
+                        <a href="products.html?brand=living-proof" class="catalog-link">Living Proof</a>
+                        <a href="products.html?brand=moroccanoil" class="catalog-link">Moroccanoil</a>
+                        <a href="products.html?brand=tigi" class="catalog-link">Tigi</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Categorias</h4>
+                        <a href="products.html?category=shampoo" class="catalog-link">Limpieza</a>
+                        <a href="products.html?category=tratamiento" class="catalog-link">Tratamientos Capilares</a>
+                        <a href="products.html?category=aceite" class="catalog-link">Aceites &amp; Serums</a>
+                        <a href="products.html?category=acondicionador" class="catalog-link">Acondicionadores</a>
+                    </div>
+                    <div class="catalog-column">
+                        <h4>Ver todo</h4>
+                        <a href="products.html" class="catalog-link catalog-link-cta">Ver todos los productos</a>
+                    </div>
+                </div>
+            </div>
+            <a href="index.html#nosotros" class="nav-link">Nosotros</a>
+        </nav>
+        
+        <!-- Boton hamburguesa (visible en moviles) -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileNav" type="button">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="user-actions">
+            <div class="user-menu-container">
+                <button id="loginBtn" class="user-profile-btn" type="button" style="display:none;">
+                    <div class="user-profile-text">
+                        <span class="user-greeting">Hola, <span id="userName">Usuario</span></span>
+                        <span class="user-profile-link">Tu perfil &gt;</span>
+                    </div>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <button class="dropdown-link" data-href="my-orders.html">Mis Compras</button>
+                    <button class="dropdown-link" data-href="opciones-cuenta.html">Configuracion</button>
+                    <button class="dropdown-link" id="manageProductsBtn" style="display: none; border-top: 1px solid #eee; color: #ff6b35; font-weight: 500;">Gestionar Productos</button>
+                    <button class="dropdown-link" id="logoutBtn">Cerrar sesion</button>
+                </div>
+                <button id="showLoginBtn" class="login-btn" style="display:none;">Iniciar sesion</button>
+                <button id="showRegisterBtn" class="register-btn" style="display:none;">Registrarse</button>
+            </div>
+            <div class="cart-icon" id="cartIcon" role="button" tabindex="0" aria-label="Abrir carrito">
+                <span class="cart-icon-badge" aria-hidden="true"></span>
+                <span class="cart-icon-label">Carrito</span>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu movil - EXACTAMENTE IGUAL AL HEADER -->
+    <nav class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <a href="index.html" class="mobile-nav-logo-link" aria-label="Ir al inicio">
+                <img src="images/logo.jpg" alt="Logo" class="mobile-nav-logo">
+            </a>
+            <span class="mobile-nav-title">Navegacion</span>
+            <button class="mobile-close" id="mobileClose" aria-label="Cerrar menu">&times;</button>
+        </div>
+        
+        <!-- LOS MISMOS ENLACES QUE TU HEADER -->
+        <a href="index.html" class="nav-link">Inicio</a>
+        <a href="products.html" class="nav-link">Productos</a>
+        <a href="index.html#nosotros" class="nav-link">Quienes somos</a>
+    </nav>
+
+    <!-- Overlay para cerrar menu -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar productos por nombre o categoria..." aria-label="Buscar productos">
+            <button id="searchButton" type="button" aria-label="Buscar">
+                <span aria-hidden="true">🔍</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros por Categoria -->
+    <div class="filters-container">
+        <div class="container">
+            <div class="category-filters" id="categoryFilters">
+                <button class="filter-btn active" data-category="all">Todos</button>
+                <!-- Las categorias se cargan dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Carril de marcas -->
+    <div class="brands-rail-container">
+        <div class="container">
+            <div class="brands-rail" id="brandsRail">
+                <button class="brand-filter-chip active" data-brand="all" type="button">Todas las marcas</button>
+                <!-- Las marcas se cargan dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos -->
+    <section class="products-section">
+        <div class="container">
+            <h2 class="section-title" id="productsTitle">Todos los Productos</h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Productos se cargan dinamicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Tu Carrito de Compras</h3>
+            <button id="closeCart" class="close-cart">x</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items del carrito se cargan dinamicamente -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceder al Pago</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <button id="closeDeleteModal" class="delete-modal-close">&times;</button>
+
+            <div class="delete-modal-icon">
+                🗑️
+            </div>
+
+            <h3>¿Eliminar producto?</h3>
+
+            <p id="deleteModalMessage">
+                ¿Estás seguro de que quieres eliminar este producto del carrito?
+            </p>
+
+            <div class="delete-modal-actions">
+                <button id="cancelDelete" class="cancel-delete-btn">
+                    Cancelar
+                </button>
+
+                <button id="confirmDelete" class="confirm-delete-btn">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal de Detalles de Producto -->
+    <div class="product-modal" id="productModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">x</button>
+            
+            <div class="product-modal-content">
+                <!-- Imagen del producto -->
+                <div class="modal-product-image">
+                    <img id="modalProductImage" src="" alt="">
+                    <div class="modal-image-placeholder" id="modalImagePlaceholder">
+                        <span class="placeholder-emoji">IMG</span>
+                        <span>Imagen no disponible</span>
+                    </div>
+                </div>
+                
+                <!-- Informacion del producto -->
+                <div class="modal-product-info">
+                    <div class="modal-header">
+                        <h2 id="modalProductName">Nombre del Producto</h2>
+                        <div class="modal-price" id="modalProductPrice">$0</div>
+                    </div>
+                    
+                    <div class="modal-category" id="modalProductCategory">Categoria</div>
+                    
+                    <div class="modal-section">
+                        <h3>Descripcion</h3>
+                        <p id="modalProductDescription">Descripcion del producto...</p>
+                    </div>
+                    
+                    <div class="modal-section" id="modalIngredientsSection">
+                        <h3>Ingredientes Principales</h3>
+                        <p id="modalProductIngredients">Ingredientes no especificados</p>
+                    </div>
+                    
+                    <div class="modal-section" id="modalUsageSection">
+                        <h3>Modo de Uso</h3>
+                        <p id="modalProductUsage">Instrucciones no especificadas</p>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3>Especificaciones</h3>
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <span class="spec-label">SKU:</span>
+                                <span id="modalProductSKU">N/A</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Stock:</span>
+                                <span id="modalProductStock">0</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Peso/Cantidad:</span>
+                                <span id="modalProductQuantity">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="add-to-cart-modal" id="modalAddToCart">
+                            Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/config/firebase-config.js?v=20260809"></script>
+    <script src="js/core/session.js?v=20260809"></script>
+    <script src="js/services/firebase-data.js?v=20260827l"></script>
+    <script src="js/core/app.js?v=20260827n"></script>
+    <script src="js/services/cart.js?v=20260827n"></script>
+    <script src="js/pages/products.js?v=20260827n"></script>
+    <script src="js/ui/menu.js?v=20260810e"></script>
+    
+    <script src="js/pages/products-modal.js?v=20260827n"></script>
+</body>
+</html>
+

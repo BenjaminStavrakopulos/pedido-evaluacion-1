@@ -1,0 +1,6 @@
+{
+  "mpPublicKey": "APP_USR-REEMPLAZAR_PUBLIC_KEY",
+  "backendUrl": "http://localhost:3000",
+  "useSandboxCheckout": false,
+  "forceSimulatedMode": false
+}

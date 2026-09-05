@@ -1,0 +1,17 @@
+[run]
+branch = True
+core = ctrace
+concurrency = greenlet
+source = load-tests
+omit =
+	load-tests/test_*.py
+
+[report]
+show_missing = True
+skip_empty = True
+
+[html]
+directory = load-tests/coverage-html
+
+[xml]
+output = load-tests/coverage.xml

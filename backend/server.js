@@ -105,9 +105,13 @@ app.use('/api/security', require('./routes/security'));
 app.use('/webhook', require('./routes/webhook'));
 
 // Health check
+const { name: serviceName, version: serviceVersion } = require('./package.json');
+
 app.get('/health', (req, res) => {
     res.json({
         status: '✅ Backend funcionando',
+        service: serviceName,
+        version: serviceVersion,
         env: nodeEnv,
         uptimeSeconds: Math.round(process.uptime())
     });

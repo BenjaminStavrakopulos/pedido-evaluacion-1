@@ -3,9 +3,11 @@ name: CI
 on:
   push:
     branches:
+      - main
       - develop
   pull_request:
     branches:
+      - develop
       - main
 
 jobs:
@@ -36,3 +38,20 @@ jobs:
 
       - name: Escaneo básico de seguridad (buscar secretos filtrados)
         run: node scripts/security-scan.js
+
+  deploy:
+    name: Deploy a Firebase Hosting
+    needs: build-and-check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Desplegar frontend a Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: monsite-85424
+          channelId: live

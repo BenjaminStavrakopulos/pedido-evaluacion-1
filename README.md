@@ -68,18 +68,74 @@ docs(readme): documentar convenciones de ramas y commits
 
 ## Flujo de trabajo (Pull Requests)
 
-1. Crear la rama desde `develop` (features) o `main` (hotfixes).
-2. Realizar commits siguiendo la convención anterior.
-3. Abrir un Pull Request hacia `develop` (features) o hacia `main` y `develop` (hotfixes).
-4. El Pull Request debe describir el cambio, cómo probarlo y referenciar el issue/tarea si aplica.
-5. GitHub Actions ejecuta automáticamente la verificación de CI (ver [`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
-   - En cada `push` a `develop`.
-   - En cada Pull Request hacia `main`.
+1. Clonar el repositorio y entrar al proyecto:
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd pedido-evaluacion-1
+git switch develop
+```
+
+2. Actualizar la rama antes de comenzar y crear una rama de trabajo:
+
+```bash
+git pull origin develop
+git switch -c feature/nombre-del-cambio
+```
+
+3. Realizar cambios, revisar el estado y crear un commit trazable:
+
+```bash
+git status
+git add <archivos-modificados>
+git commit -m "feat(scope): describir el cambio"
+```
+
+4. Publicar la rama y abrir un Pull Request hacia `develop`:
+
+```bash
+git push -u origin feature/nombre-del-cambio
+```
+
+5. El Pull Request debe describir el cambio, cómo probarlo y referenciar el issue/tarea si aplica.
+  GitHub Actions ejecuta automáticamente la verificación de CI (ver
+  [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) en cada push a `main` o `develop` y
+  en Pull Requests hacia `main` o `develop`.
 6. La revisión requiere al menos la aprobación de un/a integrante distinto/a del autor antes de
    hacer merge (revisión por pares).
-7. Se utiliza **squash merge** para features (mantener historial limpio en `develop`/`main`) y
+7. Después de resolver observaciones y confirmar que CI está en verde, se integra el Pull Request.
+  Se utiliza **squash merge** para features (mantener historial limpio en `develop`/`main`) y
    **merge commit** para hotfixes hacia `main` y `develop` (trazabilidad explícita del hotfix).
-8. Una vez fusionada, la rama `feature/*` o `hotfix/*` se elimina.
+8. Una vez fusionada, actualizar las ramas locales y eliminar la rama de trabajo:
+
+```bash
+git switch develop
+git pull origin develop
+git branch -d feature/nombre-del-cambio
+git push origin --delete feature/nombre-del-cambio
+```
+
+9. Cuando `develop` se promueve mediante Pull Request a `main`, el job `deploy` se ejecuta
+  automáticamente después de CI y publica el frontend en Firebase Hosting.
+
+## Flujo CI/CD automatizado
+
+El workflow implementa un flujo DevOps básico y reproducible:
+
+1. **Integración continua (CI):** instala Node.js 20 y las dependencias con `npm ci`, comprueba la
+  sintaxis del backend, valida referencias HTML/JS y busca secretos críticos trackeados.
+2. **Entrega continua (CD):** cuando un cambio llega a `main` y CI termina correctamente,
+  `FirebaseExtended/action-hosting-deploy` publica el frontend configurado en `firebase.json`.
+3. **Protección de credenciales:** la cuenta de servicio no se guarda en el repositorio. Debe
+  registrarse en GitHub como secreto del repositorio con el nombre `FIREBASE_SERVICE_ACCOUNT`.
+
+Para configurar el despliegue en GitHub:
+
+1. Ir a `Settings > Secrets and variables > Actions`.
+2. Crear el secreto `FIREBASE_SERVICE_ACCOUNT` con el JSON de una cuenta de servicio autorizada
+  para Firebase Hosting.
+3. Confirmar que el workflow se ejecute desde `main` y revisar el resultado en la pestaña
+  `Actions`.
 
 ## Estrategia de revisión de código
 

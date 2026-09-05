@@ -47,3 +47,7 @@ backend/audit-omit-dev.*
 .idea/
 .DS_Store
 .firebase/
+
+# Python cache
+__pycache__/
+*.pyc

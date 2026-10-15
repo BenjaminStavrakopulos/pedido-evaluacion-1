@@ -46,7 +46,7 @@ services:
       - "127.0.0.1::3000"
     networks: [evaluation]
     read_only: true
-    tmpfs: [/tmp:size=16m,mode=1777]
+    tmpfs: ["/tmp:size=16m,mode=1777"]
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 384m
@@ -68,7 +68,7 @@ services:
         condition: service_healthy
     networks: [evaluation]
     read_only: true
-    tmpfs: [/tmp:size=16m,mode=1777]
+    tmpfs: ["/tmp:size=16m,mode=1777"]
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 384m

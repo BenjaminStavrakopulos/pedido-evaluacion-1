@@ -14,6 +14,8 @@ test('Compose no publica emuladores, usa red interna y restringe backend a loopb
     assert.equal(compose.services.backend.environment.EVALUATION_MODE, 'true');
     assert.equal(compose.services.backend.environment.FIREBASE_PROJECT_ID, 'demo-monsite-evaluacion');
     assert.equal(compose.services.backend.read_only, true);
+    assert.deepEqual(compose.services.backend.tmpfs, ['/tmp:size=16m,mode=1777']);
+    assert.deepEqual(compose.services.integration.tmpfs, ['/tmp:size=16m,mode=1777']);
     assert.equal(compose.services.backend.depends_on.firebase.condition, 'service_healthy');
     for (const service of Object.values(compose.services)) {
         assert.deepEqual(service.networks, ['evaluation']);

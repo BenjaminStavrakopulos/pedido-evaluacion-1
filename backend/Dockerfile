@@ -1,9 +1,9 @@
-FROM node:24.16.0-bookworm-slim AS dependencies
+FROM node:26.11.1-bookworm-slim AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-FROM node:24.16.0-bookworm-slim AS runtime
+FROM node:26.11.1-bookworm-slim AS runtime
 ARG VCS_REF=local
 LABEL org.opencontainers.image.revision=$VCS_REF
 ENV NODE_ENV=production PORT=3000 APP_REVISION=$VCS_REF

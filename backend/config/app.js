@@ -26,77 +26,10 @@ const requestBodyLimit = process.env.REQUEST_BODY_LIMIT || '2mb';
 const canTryFallbackPort = nodeEnv !== 'production';
 const maxFallbackAttempts = 10;
 
-function validateProductionEnvironment() {
-    if (!isProduction) {
-        return;
-    }
-
-    const requiredVariables = [
-        'MERCADOPAGO_ACCESS_TOKEN',
-        'BACKEND_API_KEY',
-        'WEBHOOK_TOKEN',
-        'MERCADOPAGO_WEBHOOK_SECRET'
-    ];
-
-    const missingVariables = requiredVariables.filter((variableName) => !process.env[variableName]);
-
-    if (missingVariables.length > 0) {
-        throw new Error(`Faltan variables críticas en producción: ${missingVariables.join(', ')}`);
-    }
-}
-
-function getFrontendBaseUrl() {
-    if (process.env.FRONTEND_URL) {
-        return process.env.FRONTEND_URL;
-    }
-
-    return allowedOrigins[0] || 'http://localhost:5500';
-}
-
-function getWebhookUrl() {
-    const rawWebhookUrl = process.env.WEBHOOK_URL;
-
-    if (!rawWebhookUrl) {
-        return undefined;
-    }
-
-    try {
-        return new URL(rawWebhookUrl).toString();
-    } catch (_) {
-        return rawWebhookUrl;
-    }
-}
-
-function getRuntimeReadiness() {
-    const checks = {
-        mercadopagoAccessToken: Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN),
-        // Transbank es opcional: en integración usa credenciales por defecto del SDK
-        transbankConfigured: Boolean(
-            process.env.TRANSBANK_COMMERCE_CODE && process.env.TRANSBANK_API_KEY
-        ) || !isProduction,
-        backendApiKeyConfigured: Boolean(process.env.BACKEND_API_KEY),
-        webhookTokenConfigured: Boolean(process.env.WEBHOOK_TOKEN),
-        firebaseAdminConfigured: Boolean(
-            process.env.FIREBASE_SERVICE_ACCOUNT_PATH
-            || (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY)
-        )
-    };
-
-    return {
-        checks,
-        ready: checks.mercadopagoAccessToken
-            && checks.backendApiKeyConfigured
-            && checks.webhookTokenConfigured
-    };
-}
-
 module.exports = {
     allowedOrigins,
     allowedOriginsSet,
     canTryFallbackPort,
-    getFrontendBaseUrl,
-    getRuntimeReadiness,
-    getWebhookUrl,
     isProduction,
     maxFallbackAttempts,
     nodeEnv,
@@ -105,6 +38,5 @@ module.exports = {
     rateLimitMaxRequests,
     rateLimitWindowMs,
     requestBodyLimit,
-    requestedPort,
-    validateProductionEnvironment
+    requestedPort
 };

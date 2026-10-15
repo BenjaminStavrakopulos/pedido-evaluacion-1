@@ -1,5 +1,5 @@
 // lib/order-payment.js - Lógica compartida de validación y confirmación de pagos
-// Reutilizada por Mercado Pago (routes/payment.js, routes/webhook.js) y Transbank (routes/transbank.js)
+// Conservada desde el backend original para ejercitar pedidos con pagos ficticios.
 const { getFirestoreAdminSafe } = require('./firebase-admin');
 
 function normalizeEntityId(value) {
@@ -87,7 +87,7 @@ async function findOrderByReference(orderReference) {
 async function markOrderAsPaid(order, paymentMeta = {}) {
     const db = getFirestoreAdminSafe();
     if (!db || !order?.firestoreDocId) {
-        return;
+        throw new Error('Firestore u orden no disponibles para confirmar el pago');
     }
 
     const orderRef = db.collection('orders').doc(order.firestoreDocId);
@@ -99,7 +99,7 @@ async function markOrderAsPaid(order, paymentMeta = {}) {
     await db.runTransaction(async (transaction) => {
         const orderSnap = await transaction.get(orderRef);
         if (!orderSnap.exists) {
-            return;
+            throw new Error('La orden ya no existe; pago no confirmado');
         }
 
         const currentOrder = orderSnap.data() || {};
@@ -144,12 +144,15 @@ async function markOrderAsPaid(order, paymentMeta = {}) {
             quantityByProductId.set(productId, previousQty + quantity);
         }
 
+        const products = [];
         for (const [productId, quantity] of quantityByProductId.entries()) {
             const productRef = db.collection('products').doc(productId);
             const productSnap = await transaction.get(productRef);
             if (!productSnap.exists) continue;
-
-            const product = productSnap.data() || {};
+            products.push({ productRef, product: productSnap.data() || {}, quantity });
+        }
+        // Firestore requiere completar todas las lecturas antes de escribir.
+        for (const { productRef, product, quantity } of products) {
             const currentStock = Number.parseInt(product.stock, 10) || 0;
             const nextStock = Math.max(0, currentStock - quantity);
 

@@ -17,6 +17,7 @@ node_modules/
 backend/node_modules/
 dist/
 build/
+build-evidence/
 
 # Reportes de pruebas de carga / cobertura
 load-tests/report.html
@@ -47,6 +48,14 @@ backend/audit-omit-dev.*
 .idea/
 .DS_Store
 .firebase/
+coverage/
+test-results.xml
+images.tar.gz
+images.tar.gz.sha256
+deployment-evidence/
+health-*.json
+snyk-dependencies.json
+snyk-code.sarif
 
 # Python cache
 __pycache__/

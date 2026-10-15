@@ -1,0 +1,80 @@
+name: monsite-evaluacion
+
+x-evaluation-environment: &evaluation-environment
+  NODE_ENV: production
+  EVALUATION_MODE: "true"
+  METADATA_SERVER_DETECTION: none
+  FIREBASE_PROJECT_ID: demo-monsite-evaluacion
+  GCLOUD_PROJECT: demo-monsite-evaluacion
+  FIRESTORE_EMULATOR_HOST: firebase:8080
+  FIREBASE_AUTH_EMULATOR_HOST: firebase:9099
+  FRONTEND_URL: http://localhost:5500
+  APP_REVISION: ${APP_REVISION:-local}
+
+x-backend-build: &backend-build
+  context: ./backend
+  target: runtime
+  args:
+    VCS_REF: ${APP_REVISION:-local}
+
+services:
+  firebase:
+    image: monsite-evaluation-emulator:${IMAGE_TAG:-local}
+    build:
+      context: ./emulator
+      args:
+        VCS_REF: ${APP_REVISION:-local}
+    init: true
+    restart: unless-stopped
+    networks: [evaluation]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1536m
+    cpus: 1.0
+    pids_limit: 256
+
+  backend:
+    image: monsite-evaluation-backend:${IMAGE_TAG:-local}
+    build: *backend-build
+    init: true
+    restart: unless-stopped
+    environment: *evaluation-environment
+    depends_on:
+      firebase:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1::3000"
+    networks: [evaluation]
+    read_only: true
+    tmpfs: [/tmp:size=16m,mode=1777]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 100
+    stop_grace_period: 15s
+
+  integration:
+    image: monsite-evaluation-integration:${IMAGE_TAG:-local}
+    build:
+      <<: *backend-build
+      target: integration
+    profiles: [test]
+    environment:
+      <<: *evaluation-environment
+      BACKEND_URL: http://backend:3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [evaluation]
+    read_only: true
+    tmpfs: [/tmp:size=16m,mode=1777]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 100
+
+networks:
+  evaluation:
+    internal: true

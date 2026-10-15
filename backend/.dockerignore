@@ -1,0 +1,10 @@
+node_modules
+.env
+.env.*
+service-account*.json
+*.pem
+*.key
+coverage
+test
+test-results.xml
+*.log

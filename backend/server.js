@@ -4,12 +4,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+const { validateEvaluationEnvironment } = require('./config/evaluation');
+validateEvaluationEnvironment();
 const {
     allowedOrigins,
     allowedOriginsSet,
     canTryFallbackPort,
-    getRuntimeReadiness,
     isProduction,
     maxFallbackAttempts,
     nodeEnv,
@@ -18,13 +18,12 @@ const {
     rateLimitMaxRequests,
     rateLimitWindowMs,
     requestBodyLimit,
-    requestedPort,
-    validateProductionEnvironment
+    requestedPort
 } = require('./config/app');
 
 const app = express();
 app.disable('x-powered-by');
-app.set('trust proxy', 1);
+app.set('trust proxy', false);
 
 const apiLimiter = rateLimit({
     windowMs: rateLimitWindowMs,
@@ -98,35 +97,42 @@ app.use(express.json({ limit: requestBodyLimit }));
 app.use(express.urlencoded({ limit: requestBodyLimit, extended: true }));
 
 // Rutas
-app.use('/api/payment', require('./routes/payment'));
-app.use('/api/transbank', require('./routes/transbank'));
-app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/evaluation', require('./routes/evaluation'));
+for (const route of ['/api/payment', '/api/transbank', '/api/notifications', '/webhook']) {
+    app.use(route, (req, res) => res.status(503).json({
+        error: 'Integracion real deshabilitada en la evaluacion',
+        simulated: true,
+        evaluationApi: '/api/evaluation'
+    }));
+}
 app.use('/api/security', require('./routes/security'));
-app.use('/webhook', require('./routes/webhook'));
 
 // Health check
 app.get('/health', (req, res) => {
     res.json({
         status: '✅ Backend funcionando',
         env: nodeEnv,
+        simulated: true,
+        revision: process.env.APP_REVISION || 'local',
         uptimeSeconds: Math.round(process.uptime())
     });
 });
 
 // Readiness check (producción)
-app.get('/ready', (req, res) => {
-    const readiness = getRuntimeReadiness();
-    if (!readiness.ready) {
-        return res.status(503).json({
-            status: '❌ Backend no listo para pagos',
-            ...readiness
-        });
+app.get('/ready', async (req, res) => {
+    try {
+        const { getFirestoreAdminSafe, getAuthAdminSafe } = require('./lib/firebase-admin');
+        const db = getFirestoreAdminSafe();
+        const auth = getAuthAdminSafe();
+        if (!db || !auth) {
+            throw new Error('Firebase Emulator no inicializado');
+        }
+        await Promise.all([db.listCollections(), auth.listUsers(1)]);
+        return res.json({ ready: true, simulated: true, projectId: db.projectId });
+    } catch (error) {
+        console.error('Readiness del emulador fallo:', error.message);
+        return res.status(503).json({ ready: false, simulated: true });
     }
-
-    return res.json({
-        status: '✅ Backend listo',
-        ...readiness
-    });
 });
 
 // Error handling
@@ -138,6 +144,11 @@ app.use((err, req, res, next) => {
         });
     }
 
+    if (err && (err.type === 'entity.parse.failed' || err.type === 'entity.too.large')) {
+        return res.status(err.type === 'entity.too.large' ? 413 : 400).json({
+            error: 'Cuerpo de solicitud invalido'
+        });
+    }
     console.error('❌ Error:', err);
     const safeMessage = isProduction ? 'Error interno del servidor' : err.message;
     res.status(500).json({ 
@@ -149,19 +160,13 @@ app.use((err, req, res, next) => {
 // Iniciar servidor
 let server;
 
-validateProductionEnvironment();
-
 function startServer(port, attempt = 0) {
     server = app.listen(port, () => {
-        const readiness = getRuntimeReadiness();
-
         console.log(`🚀 Backend corriendo en http://localhost:${port}`);
         console.log(`🌍 Entorno: ${nodeEnv}`);
         console.log(`📱 Frontend(s) permitidos: ${allowedOrigins.join(', ')}`);
 
-        if (!readiness.checks.mercadopagoAccessToken) {
-            console.warn('⚠️ MERCADOPAGO_ACCESS_TOKEN no configurado: los endpoints de pago fallarán.');
-        }
+        console.log('Evaluacion aislada: pagos y notificaciones reales deshabilitados.');
     });
 
     server.on('error', (error) => {
@@ -183,15 +188,26 @@ function startServer(port, attempt = 0) {
     });
 }
 
-startServer(requestedPort);
-
-process.on('unhandledRejection', (reason) => {
-    console.error('❌ Unhandled Rejection:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-    console.error('❌ Uncaught Exception:', error);
-    process.exit(1);
-});
+if (require.main === module) {
+    startServer(requestedPort);
+    for (const signal of ['SIGTERM', 'SIGINT']) {
+        process.on(signal, () => {
+            const deadline = setTimeout(() => process.exit(1), 10000);
+            deadline.unref();
+            server.close(() => {
+                clearTimeout(deadline);
+                process.exit(0);
+            });
+        });
+    }
+    process.on('unhandledRejection', (reason) => {
+        console.error('Unhandled Rejection:', reason);
+        process.exit(1);
+    });
+    process.on('uncaughtException', (error) => {
+        console.error('Uncaught Exception:', error);
+        process.exit(1);
+    });
+}
 
 module.exports = app;

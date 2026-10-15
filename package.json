@@ -1,19 +1,21 @@
 {
-  "name": "monsite",
+  "name": "monsite-evaluation",
   "private": true,
   "version": "1.0.0",
-  "description": "Comandos raíz para operar Monsite (frontend estático + backend)",
+  "description": "Laboratorio DevOps aislado con backend Monsite y Firebase Emulator",
+  "devDependencies": {
+    "snyk": "1.1308.1",
+    "yaml": "2.9.1"
+  },
   "scripts": {
     "start": "npm --prefix backend start",
     "start:backend": "npm --prefix backend start",
-    "start:clean": "powershell -ExecutionPolicy Bypass -File ./start-clean.ps1",
-    "smoke": "npm --prefix backend run smoke",
+    "test": "npm --prefix backend test",
+    "test:coverage": "npm --prefix backend run test:coverage",
+    "test:config": "node --test scripts/pipeline-config.test.js",
+    "test:emulator": "node emulator/node_modules/firebase-tools/lib/bin/firebase.js emulators:exec --config emulator/firebase.json --project demo-monsite-evaluacion --only auth,firestore \"node scripts/test-emulator.js\"",
     "security:scan": "node scripts/security-scan.js",
     "validate": "node scripts/validate-project.js",
-    "load:test": "py -m locust -f load-tests/locustfile.py",
-    "load:test:unit": "py -m unittest discover -s load-tests -p test_*.py",
-    "coverage:load": "py -m coverage run -m locust -f load-tests/locustfile.py",
-    "coverage:report": "py -m coverage report",
-    "audit:prod": "npm --prefix backend audit --omit=dev --audit-level=moderate"
+    "audit:prod": "npm --prefix backend audit --omit=dev --audit-level=high"
   }
 }

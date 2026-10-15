@@ -1,57 +1,201 @@
-name: CI
+name: CI-CD evaluacion aislada
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
   pull_request:
-    branches:
-      - develop
-      - main
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evaluation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  APP_REVISION: ${{ github.sha }}
+  COMPOSE_PROJECT_NAME: evaluation-${{ github.run_id }}-${{ github.run_attempt }}
 
 jobs:
-  build-and-check:
+  quality:
+    name: Pruebas y calidad
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: backend/package-lock.json
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - run: npm run test:config
+      - run: npm run test:coverage
+      - run: npm run validate
+      - run: npm run security:scan
+      - name: Bloquear dependencias de runtime de severidad alta o critica
+        run: npm audit --prefix backend --omit=dev --audit-level=high
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-tests-${{ github.sha }}
+          path: backend/test-results.xml
+          if-no-files-found: warn
+          retention-days: 14
 
-      - name: Instalar dependencias del backend
-        working-directory: ./backend
-        run: npm ci
+  security:
+    name: Snyk dependencias y codigo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      SNYK_CFG_DISABLE_ANALYTICS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Exigir configuracion de Snyk (sin omitir el control)
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "::error::Configura SNYK_TOKEN y habilita Snyk Code en tu organizacion. Despliegue bloqueado."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - name: Analizar dependencias de runtime
+        run: npx --no-install snyk test --file=backend/package.json --severity-threshold=high --json-file-output=snyk-dependencies.json
+      - name: Analizar codigo del backend
+        if: (success() || failure()) && env.SNYK_TOKEN != ''
+        run: npx --no-install snyk code test backend --severity-threshold=high --sarif-file-output=snyk-code.sarif
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-${{ github.sha }}
+          path: |
+            snyk-dependencies.json
+            snyk-code.sarif
+          if-no-files-found: warn
+          retention-days: 14
 
-      - name: Verificar sintaxis del servidor (backend)
-        working-directory: ./backend
-        run: node --check server.js
-
-      - name: Validar estructura del proyecto (HTML/JS)
-        run: node scripts/validate-project.js
-
-      - name: Escaneo básico de seguridad (buscar secretos filtrados)
-        run: node scripts/security-scan.js
+  build:
+    name: Construir y probar laboratorio Docker
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar Compose y construir sin credenciales reales
+        run: |
+          docker compose --profile test config --quiet
+          docker compose --profile test build --pull
+      - name: Probar imagenes dentro del laboratorio temporal
+        run: |
+          docker compose up -d --no-build --wait --wait-timeout 180 --scale backend=2
+          docker compose --profile test run --rm --no-deps integration
+      - name: Guardar las mismas imagenes que se desplegaran
+        run: |
+          docker save \
+            "monsite-evaluation-backend:$IMAGE_TAG" \
+            "monsite-evaluation-emulator:$IMAGE_TAG" \
+            "monsite-evaluation-integration:$IMAGE_TAG" | gzip > images.tar.gz
+          sha256sum images.tar.gz > images.tar.gz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: images-${{ github.sha }}
+          path: |
+            images.tar.gz
+            images.tar.gz.sha256
+          compression-level: 0
+          retention-days: 3
+      - name: Recopilar logs de validacion Docker
+        if: always()
+        run: |
+          mkdir -p build-evidence
+          docker compose ps --all > build-evidence/containers.txt
+          docker compose logs --no-color > build-evidence/compose.log 2>&1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-${{ github.sha }}
+          path: build-evidence/
+          retention-days: 14
+      - name: Eliminar el laboratorio de pruebas de imagenes
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans
 
   deploy:
-    name: Deploy a Firebase Hosting
-    needs: build-and-check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Despliegue simulado y pruebas Compose
+    needs: [build, security]
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
-      - name: Desplegar frontend a Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          projectId: monsite-85424
-          channelId: live
+          name: images-${{ github.sha }}
+      - name: Verificar integridad y cargar imagenes
+        run: |
+          sha256sum --check images.tar.gz.sha256
+          gunzip -c images.tar.gz | docker load
+          revision=$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' "monsite-evaluation-backend:$IMAGE_TAG")
+          test "$revision" = "$APP_REVISION"
+      - name: Desplegar automaticamente dos replicas aisladas
+        run: docker compose up -d --no-build --wait --wait-timeout 180 --scale backend=2
+      - name: Verificar salud y revision de cada replica
+        run: |
+          for replica in 1 2; do
+            address=$(docker compose port --index "$replica" backend 3000)
+            curl --fail --silent --show-error "http://$address/health" > "health-$replica.json"
+            node -e "const fs=require('node:fs');const h=JSON.parse(fs.readFileSync(process.argv[1]));if(h.revision!==process.env.APP_REVISION||h.simulated!==true)process.exit(1)" "health-$replica.json"
+          done
+      - name: Pruebas contra Firestore, Auth y backend reales dentro de Compose
+        run: docker compose --profile test run --rm --no-deps integration
+      - name: Verificar que la red bloquea conexiones externas
+        run: |
+          docker compose exec -T backend node -e "
+            const net=require('node:net');
+            const s=net.connect({host:'1.1.1.1',port:443});
+            s.setTimeout(3000);
+            s.on('connect',()=>{console.error('Egreso externo permitido');s.destroy();process.exitCode=1});
+            s.on('error',()=>{console.log('Egreso bloqueado')});
+            s.on('timeout',()=>{console.log('Egreso bloqueado por timeout');s.destroy()});
+          "
+      - name: Registrar trazabilidad del despliegue
+        if: success()
+        run: |
+          {
+            echo "## Despliegue simulado verificado"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Ejecucion: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- Imagenes: monsite-evaluation-{backend,emulator,integration}:$IMAGE_TAG"
+            echo "- Proyecto Compose: $COMPOSE_PROJECT_NAME"
+            echo "- Replicas backend verificadas: 2"
+            echo "- Firestore/Auth: demo-monsite-evaluacion (sin servicios reales)"
+            echo "- Entorno temporal: se elimina al terminar esta ejecucion."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Recopilar estado y logs antes de limpiar
+        if: always()
+        run: |
+          mkdir -p deployment-evidence
+          docker compose ps --all > deployment-evidence/containers.txt
+          docker compose logs --no-color > deployment-evidence/compose.log 2>&1
+          docker image inspect "monsite-evaluation-backend:$IMAGE_TAG" > deployment-evidence/backend-image.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-${{ github.sha }}
+          path: |
+            deployment-evidence/
+            health-*.json
+          retention-days: 14
+      - name: Eliminar solo el entorno temporal de esta ejecucion
+        if: always()
+        run: docker compose --profile test down --volumes --remove-orphans

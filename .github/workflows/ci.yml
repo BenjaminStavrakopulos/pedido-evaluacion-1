@@ -156,8 +156,11 @@ jobs:
       - name: Verificar salud y revision de cada replica
         run: |
           for replica in 1 2; do
-            address=$(docker compose port --index "$replica" backend 3000)
-            curl --fail --silent --show-error "http://$address/health" > "health-$replica.json"
+            docker compose exec -T --index "$replica" backend node -e "
+              fetch('http://127.0.0.1:3000/health',{signal:AbortSignal.timeout(6000)})
+                .then(async r=>{if(!r.ok)throw new Error('Health HTTP '+r.status);console.log(JSON.stringify(await r.json()))})
+                .catch(e=>{console.error(e.message);process.exitCode=1});
+            " > "health-$replica.json"
             node -e "const fs=require('node:fs');const h=JSON.parse(fs.readFileSync(process.argv[1]));if(h.revision!==process.env.APP_REVISION||h.simulated!==true)process.exit(1)" "health-$replica.json"
           done
       - name: Pruebas contra Firestore, Auth y backend reales dentro de Compose

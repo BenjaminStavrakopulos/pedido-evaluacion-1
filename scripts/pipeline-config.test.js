@@ -43,6 +43,10 @@ test('CI bloquea construccion y despliegue tras fallos de pruebas o seguridad', 
     assert.ok(serialized.includes('--scale backend=2'));
     assert.ok(serialized.includes('snyk code test'));
     assert.ok(serialized.includes('snyk test'));
+    const healthStep = workflow.jobs.deploy.steps.find(step =>
+        step.name === 'Verificar salud y revision de cada replica');
+    assert.ok(healthStep.run.includes('exec -T --index "$replica"'));
+    assert.equal(healthStep.run.includes('docker compose port'), false);
 });
 
 test('laboratorio no conserva SDKs ni configuracion de despliegue real', () => {

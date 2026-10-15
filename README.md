@@ -50,11 +50,13 @@ git switch main
 docker compose config --quiet
 docker compose up -d --build --wait --wait-timeout 180
 docker compose ps
-docker compose port backend 3000
+docker compose exec -T backend node -e "fetch('http://127.0.0.1:3000/health').then(r=>r.json()).then(console.log)"
+docker compose exec -T backend node -e "fetch('http://127.0.0.1:3000/ready').then(r=>r.json()).then(console.log)"
 ```
 
-El ultimo comando muestra una direccion como `127.0.0.1:32768`.
-Para consultar el backend desde PowerShell:
+La consulta desde dentro del contenedor funciona tambien en Docker Engine
+que no publique puertos de redes internas. Si `docker compose port backend 3000`
+devuelve una direccion de loopback, tambien se puede consultar desde PowerShell:
 
 ```powershell
 $address = docker compose port backend 3000
@@ -72,11 +74,13 @@ estan disponibles.
 docker compose --profile test build integration
 docker compose --profile test run --rm integration
 docker compose up -d --no-build --wait --scale backend=2
-docker compose port --index 1 backend 3000
-docker compose port --index 2 backend 3000
+docker compose exec -T --index 1 backend node -e "fetch('http://127.0.0.1:3000/health').then(r=>r.json()).then(console.log)"
+docker compose exec -T --index 2 backend node -e "fetch('http://127.0.0.1:3000/health').then(r=>r.json()).then(console.log)"
 ```
 
-Cada replica recibe un puerto de loopback diferente. No se usa `container_name`
+La configuracion permite puertos dinamicos de loopback donde el motor los
+soporte para redes internas; CI no depende de esa publicacion y comprueba
+cada replica desde su propio contenedor. No se usa `container_name`
 ni un puerto fijo que impida escalar. No se incluye un balanceador: en CI se
 comprueba cada replica individualmente; Compose no implementa autoescalado.
 Firestore Emulator es una dependencia unica de laboratorio, no un servicio

@@ -1,4 +1,4 @@
-FROM node:24.16.0-trixie-slim
+FROM node:26.12.0-trixie-slim
 ARG VCS_REF=local
 LABEL org.opencontainers.image.revision=$VCS_REF
 RUN apt-get update \

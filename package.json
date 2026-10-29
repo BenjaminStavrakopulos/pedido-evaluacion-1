@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Laboratorio DevOps aislado con backend Monsite y Firebase Emulator",
   "devDependencies": {
-    "snyk": "1.1308.1",
+    "snyk": "1.1308.3",
     "yaml": "2.9.1"
   },
   "scripts": {
